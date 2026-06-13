@@ -5,7 +5,6 @@ import com.elli.mockserver.model.RouteDefinition;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -19,13 +18,16 @@ public class PersistenceService {
 
     private static final Path STORAGE_DIR = Paths.get("mock-store");
 
-    @Autowired
-    private DynamicRouteRegistrar routeRegistrar;
+    private final DynamicRouteRegistrar routeRegistrar;
 
-    @Autowired
-    private MockRegistryService registry;
+    private final MockRegistryService registry;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    public PersistenceService(DynamicRouteRegistrar routeRegistrar, MockRegistryService registry) {
+        this.routeRegistrar = routeRegistrar;
+        this.registry = registry;
+    }
 
     @PostConstruct
     public void init() throws IOException {
@@ -62,7 +64,8 @@ public class PersistenceService {
         try {
             String mockId = file.getFileName().toString().replace(".json", "");
             List<RouteDefinition> routes = objectMapper.readValue(
-                    file.toFile(), new TypeReference<List<RouteDefinition>>() {});
+                    file.toFile(), new TypeReference<List<RouteDefinition>>() {
+                    });
             registry.registerMock(mockId, routes);
             routes.forEach(route -> routeRegistrar.registerRoute(mockId, route));
         } catch (IOException e) {

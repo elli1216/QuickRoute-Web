@@ -11,7 +11,6 @@ import com.elli.mockserver.model.RouteDefinition;
 import com.elli.mockserver.service.DynamicRouteRegistrar;
 import com.elli.mockserver.service.MockRegistryService;
 import com.elli.mockserver.service.PersistenceService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,14 +19,18 @@ import java.util.*;
 @RestController
 public class MockManagementController {
 
-    @Autowired
-    private DynamicRouteRegistrar routeRegistrar;
+    private final DynamicRouteRegistrar routeRegistrar;
 
-    @Autowired
-    private MockRegistryService registry;
+    private final MockRegistryService registry;
 
-    @Autowired
-    private PersistenceService persistence;
+    private final PersistenceService persistence;
+
+    public MockManagementController(DynamicRouteRegistrar routeRegistrar, MockRegistryService registry,
+            PersistenceService persistence) {
+        this.routeRegistrar = routeRegistrar;
+        this.registry = registry;
+        this.persistence = persistence;
+    }
 
     @PostMapping("/mock/upload")
     public ResponseEntity<MockUploadResponse> uploadMock(@RequestBody Map<String, RouteConfigDto> definition) {

@@ -6,7 +6,6 @@ import com.elli.mockserver.service.MockRegistryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -14,8 +13,11 @@ import java.util.Map;
 @Component
 public class MockRequestHandler {
 
-    @Autowired
-    private MockRegistryService registry;
+    private final MockRegistryService registry;
+
+    public MockRequestHandler(MockRegistryService registry) {
+        this.registry = registry;
+    }
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 

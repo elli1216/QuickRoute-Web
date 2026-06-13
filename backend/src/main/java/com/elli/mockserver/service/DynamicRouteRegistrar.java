@@ -5,7 +5,6 @@ import com.elli.mockserver.handler.MockRequestHandler;
 import com.elli.mockserver.model.RouteDefinition;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,14 +16,19 @@ import java.lang.reflect.Method;
 @Component
 public class DynamicRouteRegistrar {
 
-    @Autowired
     @Qualifier("requestMappingHandlerMapping")
     private RequestMappingHandlerMapping handlerMapping;
 
-    @Autowired
     private MockRequestHandler mockHandler;
 
     private Method handlerMethod;
+
+    public DynamicRouteRegistrar(RequestMappingHandlerMapping handlerMapping, MockRequestHandler mockHandler,
+            Method handlerMethod) {
+        this.handlerMapping = handlerMapping;
+        this.mockHandler = mockHandler;
+        this.handlerMethod = handlerMethod;
+    }
 
     public DynamicRouteRegistrar() {
         try {
