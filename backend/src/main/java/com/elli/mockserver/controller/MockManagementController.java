@@ -10,7 +10,6 @@ import com.elli.mockserver.model.MockConfiguration;
 import com.elli.mockserver.model.RouteDefinition;
 import com.elli.mockserver.service.DynamicRouteRegistrar;
 import com.elli.mockserver.service.MockRegistryService;
-import com.elli.mockserver.service.PersistenceService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,13 +22,9 @@ public class MockManagementController {
 
     private final MockRegistryService registry;
 
-    private final PersistenceService persistence;
-
-    public MockManagementController(DynamicRouteRegistrar routeRegistrar, MockRegistryService registry,
-            PersistenceService persistence) {
+    public MockManagementController(DynamicRouteRegistrar routeRegistrar, MockRegistryService registry) {
         this.routeRegistrar = routeRegistrar;
         this.registry = registry;
-        this.persistence = persistence;
     }
 
     @PostMapping("/mock/upload")
@@ -39,7 +34,6 @@ public class MockManagementController {
 
         routes.forEach(route -> routeRegistrar.registerRoute(mockId, route));
         registry.registerMock(mockId, routes);
-        persistence.save(mockId, routes);
 
         return ResponseEntity.ok(new MockUploadResponse(mockId));
     }
@@ -71,7 +65,6 @@ public class MockManagementController {
         }
         routes.forEach(route -> routeRegistrar.unregisterRoute(mockId, route));
         registry.removeMock(mockId);
-        persistence.delete(mockId);
         return ResponseEntity.noContent().build();
     }
 

@@ -24,11 +24,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(ex.getMessage()));
     }
 
-    @ExceptionHandler(PersistenceException.class)
-    public ResponseEntity<ErrorResponse> handlePersistence(PersistenceException ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(ex.getMessage()));
-    }
-
     @ExceptionHandler(RouteRegistrationException.class)
     public ResponseEntity<ErrorResponse> handleRouteRegistration(RouteRegistrationException ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(ex.getMessage()));

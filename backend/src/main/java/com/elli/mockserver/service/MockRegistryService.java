@@ -2,41 +2,63 @@ package com.elli.mockserver.service;
 
 import com.elli.mockserver.model.MockConfiguration;
 import com.elli.mockserver.model.RouteDefinition;
+import com.elli.mockserver.repository.MockConfigurationRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 public class MockRegistryService {
 
-    private final Map<String, MockConfiguration> mocks = new ConcurrentHashMap<>();
+    private final MockConfigurationRepository mockRepo;
 
+    public MockRegistryService(MockConfigurationRepository mockRepo) {
+        this.mockRepo = mockRepo;
+    }
+
+    @Transactional
     public void registerMock(String mockId, List<RouteDefinition> routes) {
-        mocks.put(mockId, new MockConfiguration(mockId, routes));
+        MockConfiguration mock = new MockConfiguration(mockId, routes);
+        for (RouteDefinition route : routes) {
+            route.setMock(mock);
+        }
+        mockRepo.save(mock);
     }
 
+    @Transactional
     public void removeMock(String mockId) {
-        mocks.remove(mockId);
+        mockRepo.deleteById(mockId);
     }
 
+    @Transactional(readOnly = true)
     public List<RouteDefinition> getRoutes(String mockId) {
-        MockConfiguration config = mocks.get(mockId);
-        return config != null ? config.getRoutes() : List.of();
+        return mockRepo.findById(mockId)
+                .map(MockConfiguration::getRoutes)
+                .orElse(List.of());
     }
 
+    @Transactional(readOnly = true)
     public RouteDefinition findRoute(String requestUri, String method) {
         String mockId = extractMockId(requestUri);
-        if (mockId == null) return null;
+        if (mockId == null)
+            return null;
 
-        MockConfiguration config = mocks.get(mockId);
-        if (config == null) return null;
+        Optional<MockConfiguration> opt = mockRepo.findById(mockId);
+        if (opt.isEmpty())
+            return null;
 
         String relativePath = extractRelativePath(requestUri, mockId);
 
-        for (RouteDefinition route : config.getRoutes()) {
+        for (RouteDefinition route : opt.get().getRoutes()) {
             if (route.getMethod().equalsIgnoreCase(method) && matchesPath(route.getPathPattern(), relativePath)) {
                 return route;
             }
@@ -44,10 +66,12 @@ public class MockRegistryService {
         return null;
     }
 
+    @Transactional(readOnly = true)
     public Map<String, String> extractPathVariables(String requestUri, String pathPattern) {
         Map<String, String> vars = new LinkedHashMap<>();
         String mockId = extractMockId(requestUri);
-        if (mockId == null) return vars;
+        if (mockId == null)
+            return vars;
 
         String relativePath = extractRelativePath(requestUri, mockId);
         Pattern pattern = buildPattern(pathPattern);
@@ -62,12 +86,16 @@ public class MockRegistryService {
         return vars;
     }
 
+    @Transactional(readOnly = true)
     public MockConfiguration getMock(String mockId) {
-        return mocks.get(mockId);
+        return mockRepo.findById(mockId).orElse(null);
     }
 
+    @Transactional(readOnly = true)
     public Set<String> getMockIds() {
-        return mocks.keySet();
+        return mockRepo.findAll().stream()
+                .map(MockConfiguration::getId)
+                .collect(Collectors.toSet());
     }
 
     private String extractMockId(String uri) {
