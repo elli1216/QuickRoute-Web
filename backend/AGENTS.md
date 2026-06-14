@@ -6,8 +6,11 @@
 
 ### Stack
 - Spring Boot 4.0.6, Java 26, Maven wrapper (`mvnw`).
-- Dependencies: `spring-boot-starter-webmvc`, `spring-boot-starter-validation`, `spring-boot-starter-actuator`, `spring-boot-devtools` (runtime), `jackson-databind`.
-- **No Lombok.** Write getters/setters manually. No JPA — persistence is file-based (`mock-store/`).
+- Dependencies: `spring-boot-starter-webmvc`, `spring-boot-starter-validation`, `spring-boot-starter-actuator`, `spring-boot-starter-data-jpa`, `spring-boot-starter-thymeleaf`, `spring-boot-devtools` (runtime), `jackson-databind`, `h2` (runtime, dev), `postgresql` (runtime, prod).
+- **No Lombok.** Write getters/setters manually.
+- **JPA-backed** — JPA entities in `model/`, repositories in `service/`.
+- **Profiles**: `dev` (default, H2 in-memory), `prod` (PostgreSQL via `DATABASE_URL` env).
+- **CORS** configured to allow React dev server origin (port 3000).
 - No lint, formatter, or typecheck configuration.
 
 ### Commands
@@ -23,11 +26,11 @@
 | `MockManagementController` | `POST /mock/upload`, `GET /mocks`, `DELETE /mock/{mockId}` |
 | `DynamicRouteRegistrar` | Registers/unregisters routes in Spring via `RequestMappingHandlerMapping` at runtime |
 | `MockRequestHandler` | Serves mocked responses: delay, path variable substitution in response body |
-| `MockRegistryService` | In-memory `ConcurrentHashMap<String, MockConfiguration>` with pattern matching |
-| `PersistenceService` | Saves/loads `mock-store/{mockId}.json`; reloads all on `@PostConstruct` |
+| `MockRegistryService` | In-memory `ConcurrentHashMap<String, MockConfiguration>` with pattern matching; replaced file persistence with JPA repositories |
+| `MockConfigurationRepository` | `JpaRepository<MockConfiguration, String>` |
+| `RouteDefinitionRepository` | `JpaRepository<RouteDefinition, Long>` with `findByMockId(String)` |
 
 ### Gotchas
 - **`@Qualifier("requestMappingHandlerMapping")`** is required on the `RequestMappingHandlerMapping` field in `DynamicRouteRegistrar` — Actuator creates a second bean (`controllerEndpointHandlerMapping`) that causes `NoUniqueBeanDefinitionException`.
-- `mock-store/` directory is created at runtime by `PersistenceService` — add to `.gitignore`.
 - Jackson is **not** transitively included by `spring-boot-starter-webmvc` in Boot 4.x; `jackson-databind` is declared explicitly.
 - The README references Gradle commands (`./gradlew bootRun`) — this project is Maven-only.
