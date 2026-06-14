@@ -1,0 +1,401 @@
+import { createFileRoute } from '@tanstack/react-router'
+import { useState, useCallback } from 'react'
+import { Button } from '#/components/ui/button'
+import { Input } from '#/components/ui/input'
+import { Label } from '#/components/ui/label'
+import { Textarea } from '#/components/ui/textarea'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '#/components/ui/select'
+import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
+import { Toaster, toast } from 'sonner'
+import type { RouteFormInput, MockUploadResult } from '#/lib/api'
+import { uploadMock, buildEndpointUrl, buildCurl } from '#/lib/api'
+
+export const Route = createFileRoute('/create')({ component: CreateMock })
+
+const METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'] as const
+
+const emptyRoute = (): RouteFormInput => ({
+  method: 'GET',
+  path: '',
+  status: 200,
+  delay: 0,
+  body: '',
+})
+
+function loadSavedMockIds(): string[] {
+  try {
+    return JSON.parse(localStorage.getItem('quickroute-mock-ids') || '[]')
+  } catch {
+    return []
+  }
+}
+
+function saveMockId(id: string) {
+  const ids = loadSavedMockIds().filter((x) => x !== id)
+  ids.unshift(id)
+  localStorage.setItem('quickroute-mock-ids', JSON.stringify(ids.slice(0, 20)))
+}
+
+function CreateMock() {
+  const [routes, setRoutes] = useState<RouteFormInput[]>([emptyRoute()])
+  const [existingMockId, setExistingMockId] = useState('')
+  const [result, setResult] = useState<MockUploadResult | null>(null)
+  const [submitting, setSubmitting] = useState(false)
+  const savedIds = loadSavedMockIds()
+
+  const updateRoute = useCallback(
+    (i: number, field: keyof RouteFormInput, value: string | number) => {
+      setRoutes((prev) => {
+        const next = prev.map((r, j) =>
+          j === i ? { ...r, [field]: value } : r,
+        )
+        return next
+      })
+    },
+    [],
+  )
+
+  const addRoute = useCallback(() => {
+    setRoutes((prev) => [...prev, emptyRoute()])
+  }, [])
+
+  const removeRoute = useCallback((i: number) => {
+    setRoutes((prev) =>
+      prev.length > 1 ? prev.filter((_, j) => j !== i) : prev,
+    )
+  }, [])
+
+  const handleSubmit = useCallback(async () => {
+    const errors: string[] = []
+    routes.forEach((r, i) => {
+      if (!r.path.trim()) errors.push(`Route ${i + 1}: path is required`)
+      if (r.status < 100 || r.status > 599)
+        errors.push(`Route ${i + 1}: status must be 100-599`)
+      if (r.delay < 0) errors.push(`Route ${i + 1}: delay must be >= 0`)
+      if (r.body.trim()) {
+        try {
+          JSON.parse(r.body)
+        } catch {
+          errors.push(`Route ${i + 1}: body is not valid JSON`)
+        }
+      }
+    })
+
+    if (errors.length > 0) {
+      errors.forEach((e) => toast.error(e))
+      return
+    }
+
+    setSubmitting(true)
+    try {
+      const res = await uploadMock(routes)
+      setResult(res)
+      saveMockId(res.mockId)
+      toast.success('Mock created!')
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Upload failed')
+    } finally {
+      setSubmitting(false)
+    }
+  }, [routes])
+
+  const resetForm = useCallback(() => {
+    setRoutes([emptyRoute()])
+    setExistingMockId('')
+    setResult(null)
+  }, [])
+
+  if (result) {
+    return (
+      <div className="page-wrap py-8 md:py-12 px-4 md:px-0">
+        <Card>
+          <CardHeader>
+            <CardTitle className="display-title text-xl md:text-2xl">
+              Mock Created!
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div
+              className="island-shell rounded-xl p-4 md:p-5 border"
+              style={{ borderColor: 'var(--line)' }}
+            >
+              <Label>Your Mock ID</Label>
+              <div className="flex gap-2 mt-1">
+                <code
+                  className="flex-1 p-3 rounded-lg text-sm font-mono break-all"
+                  style={{ background: 'var(--bg-base)' }}
+                >
+                  {result.mockId}
+                </code>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    navigator.clipboard.writeText(result.mockId)
+                    toast.success('Copied!')
+                  }}
+                  className="shrink-0"
+                >
+                  Copy
+                </Button>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="font-bold mb-3">Endpoints</h3>
+              <div className="space-y-2">
+                {routes.map((r, i) => {
+                  const url = buildEndpointUrl(
+                    result.mockId,
+                    r.path.startsWith('/') ? r.path : `/${r.path}`,
+                  )
+                  return (
+                    <div
+                      key={i}
+                      className="island-shell rounded-xl p-3 md:p-4 border flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3"
+                      style={{ borderColor: 'var(--line)' }}
+                    >
+                      <span
+                        className="px-2 py-0.5 rounded text-xs font-bold shrink-0 self-start sm:self-auto"
+                        style={{
+                          background:
+                            r.method === 'GET'
+                              ? '#dbeafe'
+                              : r.method === 'POST'
+                                ? '#dcfce7'
+                                : r.method === 'DELETE'
+                                  ? '#fee2e2'
+                                  : r.method === 'PUT'
+                                    ? '#fef3c7'
+                                    : '#f3e8ff',
+                          color:
+                            r.method === 'GET'
+                              ? '#1e40af'
+                              : r.method === 'POST'
+                                ? '#166534'
+                                : r.method === 'DELETE'
+                                  ? '#991b1b'
+                                  : r.method === 'PUT'
+                                    ? '#92400e'
+                                    : '#6b21a8',
+                        }}
+                      >
+                        {r.method}
+                      </span>
+                      <code className="text-xs md:text-sm flex-1 break-all">
+                        {url}
+                      </code>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          navigator.clipboard.writeText(url)
+                          toast.success('URL copied!')
+                        }}
+                        className="w-full sm:w-auto shrink-0"
+                      >
+                        Copy URL
+                      </Button>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="font-bold mb-3">Quick test (curl)</h3>
+              <div className="space-y-2">
+                {routes.map((r, i) => {
+                  const url = buildEndpointUrl(
+                    result.mockId,
+                    r.path.startsWith('/') ? r.path : `/${r.path}`,
+                  )
+                  const curl = buildCurl(r.method, url)
+                  return (
+                    <pre
+                      key={i}
+                      className="p-3 rounded-xl text-xs overflow-x-auto"
+                      style={{ background: '#1d2e45', color: '#e8efff' }}
+                    >
+                      <code>{curl}</code>
+                    </pre>
+                  )
+                })}
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button onClick={resetForm}>Create Another Mock</Button>
+            </div>
+          </CardContent>
+        </Card>
+        <Toaster />
+      </div>
+    )
+  }
+
+  return (
+    <div className="page-wrap py-8 md:py-12 px-4 md:px-0">
+      <div className="mb-6 md:mb-8">
+        <h1 className="display-title text-2xl md:text-4xl font-bold">
+          Create a Mock
+        </h1>
+        <p
+          className="mt-2 text-sm md:text-base"
+          style={{ color: 'var(--sea-ink-soft)' }}
+        >
+          Define your API routes and get a live mock endpoint instantly.
+        </p>
+      </div>
+
+      <div className="grid lg:grid-cols-3 gap-6 md:gap-8">
+        <div className="lg:col-span-2 space-y-6">
+          {routes.map((route, i) => (
+            <Card key={i}>
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-base">Route {i + 1}</CardTitle>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removeRoute(i)}
+                    style={{ color: '#ef4444' }}
+                  >
+                    Remove
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div className="space-y-1.5">
+                    <Label>Method</Label>
+                    <Select
+                      value={route.method}
+                      onValueChange={(v) => updateRoute(i, 'method', v)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {METHODS.map((m) => (
+                          <SelectItem key={m} value={m}>
+                            {m}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1.5 sm:col-span-3">
+                    <Label>Path</Label>
+                    <Input
+                      placeholder="/users/:id"
+                      value={route.path}
+                      onChange={(e) => updateRoute(i, 'path', e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label>Status</Label>
+                    <Input
+                      type="number"
+                      min={100}
+                      max={599}
+                      value={route.status}
+                      onChange={(e) =>
+                        updateRoute(i, 'status', Number(e.target.value))
+                      }
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Delay (ms)</Label>
+                    <Input
+                      type="number"
+                      min={0}
+                      value={route.delay}
+                      onChange={(e) =>
+                        updateRoute(i, 'delay', Number(e.target.value))
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label>Response Body (JSON)</Label>
+                  <Textarea
+                    placeholder='{"message": "Hello"}'
+                    className="font-mono text-sm min-h-[100px]"
+                    value={route.body}
+                    onChange={(e) => updateRoute(i, 'body', e.target.value)}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+
+          <Button variant="outline" onClick={addRoute} className="w-full">
+            + Add Route
+          </Button>
+
+          <Button
+            onClick={handleSubmit}
+            disabled={submitting}
+            className="w-full"
+            size="lg"
+          >
+            {submitting ? 'Uploading...' : 'Create Mock'}
+          </Button>
+        </div>
+
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">
+                Existing Mock ID (optional)
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Input
+                placeholder="Paste mock ID..."
+                value={existingMockId}
+                onChange={(e) => setExistingMockId(e.target.value)}
+              />
+              <p className="text-xs" style={{ color: 'var(--sea-ink-soft)' }}>
+                Enter a mock ID to resume editing. Routes you create here will
+                be added alongside existing ones.
+              </p>
+            </CardContent>
+          </Card>
+
+          {savedIds.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Recent Mock IDs</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {savedIds.map((id) => (
+                  <Button
+                    key={id}
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start truncate font-mono text-xs"
+                    onClick={() => setExistingMockId(id)}
+                  >
+                    {id}
+                  </Button>
+                ))}
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </div>
+      <Toaster />
+    </div>
+  )
+}

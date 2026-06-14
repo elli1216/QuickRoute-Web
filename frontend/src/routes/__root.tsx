@@ -2,6 +2,7 @@ import {
   HeadContent,
   Scripts,
   createRootRouteWithContext,
+  Link,
 } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
@@ -27,7 +28,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'TanStack Start Starter',
+        title: 'QuickRoute - Free API Mock Server',
       },
     ],
     links: [
@@ -47,7 +48,39 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        {children}
+        <nav
+          className="page-wrap flex items-center gap-4 md:gap-6 py-3 md:py-4 px-4 md:px-0"
+          style={{ borderBottom: '1px solid var(--line)' }}
+        >
+          <Link
+            to="/"
+            className="nav-link flex items-center gap-2"
+            activeProps={{
+              className: 'nav-link is-active flex items-center gap-2',
+            }}
+          >
+            <img
+              src="/main-logo.svg"
+              alt="QuickRoute"
+              className="size-10 w-auto"
+            />
+          </Link>
+          <Link
+            to="/create"
+            className="nav-link"
+            activeProps={{ className: 'nav-link is-active' }}
+          >
+            Create Mock
+          </Link>
+          <Link
+            to="/mocks"
+            className="nav-link"
+            activeProps={{ className: 'nav-link is-active' }}
+          >
+            My Mocks
+          </Link>
+        </nav>
+        <main>{children}</main>
         <TanStackDevtools
           config={{
             position: 'bottom-right',
