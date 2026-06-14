@@ -268,13 +268,13 @@ function Home() {
               className="mt-3 md:mt-4 p-3 md:p-4 rounded-xl text-xs md:text-sm overflow-x-auto max-w-full"
               style={{ background: '#1d2e45', color: '#e8efff' }}
             >
-              <code>{`curl http://localhost:8080/mock/abc123/users
+              <code>{`curl /mock/abc123/users
 # → [{"id":1,"name":"Alice"},...]
 
-curl http://localhost:8080/mock/abc123/users/42
+curl /mock/abc123/users/42
 # → {"id":"42","name":"User 42"}
 
-curl -X POST http://localhost:8080/mock/abc123/users
+curl -X POST /mock/abc123/users
 # → {"id":99,"name":"Created"}`}</code>
             </pre>
             <p

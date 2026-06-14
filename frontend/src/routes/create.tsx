@@ -13,8 +13,10 @@ import {
 } from '#/components/ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
 import { Toaster, toast } from 'sonner'
+import { CheckCircle, XCircle } from 'lucide-react'
 import type { RouteFormInput, MockUploadResult } from '#/lib/api'
 import { uploadMock, buildEndpointUrl, buildCurl } from '#/lib/api'
+import { validateJson, formatJson } from '#/lib/json'
 
 export const Route = createFileRoute('/create')({ component: CreateMock })
 
@@ -327,13 +329,45 @@ function CreateMock() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label>Response Body (JSON)</Label>
+                  <div className="flex items-center justify-between">
+                    <Label>Response Body (JSON)</Label>
+                    <div className="flex items-center gap-2">
+                      {route.body.trim() &&
+                        (() => {
+                          const check = validateJson(route.body)
+                          return check.valid ? (
+                            <CheckCircle
+                              size={14}
+                              style={{ color: '#16a34a' }}
+                            />
+                          ) : (
+                            <XCircle size={14} style={{ color: '#dc2626' }} />
+                          )
+                        })()}
+                      <Button
+                        className='btn-primary'
+                        type="button"
+                        variant="default"
+                        size="sm"
+                        onClick={() =>
+                          updateRoute(i, 'body', formatJson(route.body))
+                        }
+                      >
+                        Format
+                      </Button>
+                    </div>
+                  </div>
                   <Textarea
                     placeholder='{"message": "Hello"}'
-                    className="font-mono text-sm min-h-[100px]"
+                    className="font-mono text-sm min-h-25"
                     value={route.body}
                     onChange={(e) => updateRoute(i, 'body', e.target.value)}
                   />
+                  {route.body.trim() && !validateJson(route.body).valid && (
+                    <p className="text-xs mt-1" style={{ color: '#dc2626' }}>
+                      {validateJson(route.body).error}
+                    </p>
+                  )}
                 </div>
               </CardContent>
             </Card>
