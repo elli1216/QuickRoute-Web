@@ -28,12 +28,14 @@ public class MockManagementController {
     }
 
     @PostMapping("/mock/upload")
-    public ResponseEntity<MockUploadResponse> uploadMock(@RequestBody Map<String, RouteConfigDto> definition) {
+    public ResponseEntity<MockUploadResponse> uploadMock(
+            @RequestBody Map<String, RouteConfigDto> definition,
+            @RequestParam(defaultValue = "168") int expiresInHours) {
         String mockId = UUID.randomUUID().toString();
         List<RouteDefinition> routes = parseDefinition(definition);
 
         routes.forEach(route -> routeRegistrar.registerRoute(mockId, route));
-        registry.registerMock(mockId, routes);
+        registry.registerMock(mockId, routes, expiresInHours);
 
         return ResponseEntity.ok(new MockUploadResponse(mockId));
     }
@@ -49,6 +51,7 @@ public class MockManagementController {
                     config.getId(),
                     config.getRoutes().size(),
                     config.getCreatedAt(),
+                    config.getExpiresAt(),
                     config.getRoutes().stream()
                             .map(r -> new RouteResponseDto(r.getMethod(), r.getPathPattern(), r.getStatusCode(),
                                     r.getDelayMs()))

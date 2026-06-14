@@ -21,13 +21,16 @@ public class MockConfiguration {
 
     private LocalDateTime createdAt;
 
+    private LocalDateTime expiresAt;
+
     public MockConfiguration() {
     }
 
-    public MockConfiguration(String id, List<RouteDefinition> routes) {
+    public MockConfiguration(String id, List<RouteDefinition> routes, LocalDateTime expiresAt) {
         this.id = id;
         this.routes = routes;
         this.createdAt = LocalDateTime.now();
+        this.expiresAt = expiresAt;
     }
 
     public String getId() {
@@ -52,6 +55,14 @@ public class MockConfiguration {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getExpiresAt() {
+        return expiresAt;
+    }
+
+    public void setExpiresAt(LocalDateTime expiresAt) {
+        this.expiresAt = expiresAt;
     }
 
     public void addRoute(RouteDefinition route) {

@@ -8,15 +8,18 @@ public class MockSummaryDto {
     private String mockId;
     private int routeCount;
     private LocalDateTime createdAt;
+    private LocalDateTime expiresAt;
     private List<RouteResponseDto> routes;
 
     public MockSummaryDto() {
     }
 
-    public MockSummaryDto(String mockId, int routeCount, LocalDateTime createdAt, List<RouteResponseDto> routes) {
+    public MockSummaryDto(String mockId, int routeCount, LocalDateTime createdAt, LocalDateTime expiresAt,
+            List<RouteResponseDto> routes) {
         this.mockId = mockId;
         this.routeCount = routeCount;
         this.createdAt = createdAt;
+        this.expiresAt = expiresAt;
         this.routes = routes;
     }
 
@@ -42,6 +45,14 @@ public class MockSummaryDto {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getExpiresAt() {
+        return expiresAt;
+    }
+
+    public void setExpiresAt(LocalDateTime expiresAt) {
+        this.expiresAt = expiresAt;
     }
 
     public List<RouteResponseDto> getRoutes() {

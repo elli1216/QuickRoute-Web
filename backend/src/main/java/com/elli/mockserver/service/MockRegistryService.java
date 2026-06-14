@@ -3,9 +3,11 @@ package com.elli.mockserver.service;
 import com.elli.mockserver.model.MockConfiguration;
 import com.elli.mockserver.model.RouteDefinition;
 import com.elli.mockserver.repository.MockConfigurationRepository;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -21,13 +23,17 @@ public class MockRegistryService {
 
     private final MockConfigurationRepository mockRepo;
 
-    public MockRegistryService(MockConfigurationRepository mockRepo) {
+    private final DynamicRouteRegistrar routeRegistrar;
+
+    public MockRegistryService(MockConfigurationRepository mockRepo, DynamicRouteRegistrar routeRegistrar) {
         this.mockRepo = mockRepo;
+        this.routeRegistrar = routeRegistrar;
     }
 
     @Transactional
-    public void registerMock(String mockId, List<RouteDefinition> routes) {
-        MockConfiguration mock = new MockConfiguration(mockId, routes);
+    public void registerMock(String mockId, List<RouteDefinition> routes, int expiresInHours) {
+        LocalDateTime expiresAt = LocalDateTime.now().plusHours(expiresInHours);
+        MockConfiguration mock = new MockConfiguration(mockId, routes, expiresAt);
         for (RouteDefinition route : routes) {
             route.setMock(mock);
         }
@@ -96,6 +102,18 @@ public class MockRegistryService {
         return mockRepo.findAll().stream()
                 .map(MockConfiguration::getId)
                 .collect(Collectors.toSet());
+    }
+
+    @Scheduled(cron = "0 0 */6 * * *")
+    @Transactional
+    public void cleanupExpiredMocks() {
+        List<MockConfiguration> expired = mockRepo.findByExpiresAtBefore(LocalDateTime.now());
+        for (MockConfiguration mock : expired) {
+            for (RouteDefinition route : mock.getRoutes()) {
+                routeRegistrar.unregisterRoute(mock.getId(), route);
+            }
+            mockRepo.delete(mock);
+        }
     }
 
     private String extractMockId(String uri) {
