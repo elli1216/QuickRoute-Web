@@ -1,0 +1,8 @@
+target/
+.idea/
+.vscode/
+*.md
+.git
+.gitattributes
+.gitignore
+mock-store/
