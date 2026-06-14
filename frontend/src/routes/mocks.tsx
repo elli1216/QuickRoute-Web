@@ -83,6 +83,8 @@ function MyMocks() {
                     >
                       {mock.routeCount} route{mock.routeCount !== 1 ? 's' : ''}{' '}
                       &bull; Created {new Date(mock.createdAt).toLocaleString()}
+                      <br />
+                      Expires {new Date(mock.expiresAt).toLocaleString()}
                     </p>
                   </div>
                   <Button

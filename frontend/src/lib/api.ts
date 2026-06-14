@@ -1,4 +1,4 @@
-const BASE = 'http://localhost:8080'
+const BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:8080'
 
 export interface RouteFormInput {
   method: string
@@ -22,6 +22,7 @@ export interface MockSummary {
   mockId: string
   routeCount: number
   createdAt: string
+  expiresAt: string
   routes: Array<{
     method: string
     pathPattern: string
@@ -41,6 +42,7 @@ export function buildCurl(method: string, url: string): string {
 
 export async function uploadMock(
   routes: RouteFormInput[],
+  expiresInHours: number = 168,
 ): Promise<MockUploadResult> {
   const body: Record<string, RouteConfigDto> = {}
 
@@ -64,11 +66,14 @@ export async function uploadMock(
     }
   }
 
-  const res = await fetch(`${BASE}/mock/upload`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  })
+  const res = await fetch(
+    `${BASE}/mock/upload?expiresInHours=${expiresInHours}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    },
+  )
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: res.statusText }))

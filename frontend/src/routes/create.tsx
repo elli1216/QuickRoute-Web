@@ -47,6 +47,7 @@ function saveMockId(id: string) {
 function CreateMock() {
   const [routes, setRoutes] = useState<RouteFormInput[]>([emptyRoute()])
   const [existingMockId, setExistingMockId] = useState('')
+  const [expiresInHours, setExpiresInHours] = useState(168)
   const [result, setResult] = useState<MockUploadResult | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const savedIds = loadSavedMockIds()
@@ -96,7 +97,7 @@ function CreateMock() {
 
     setSubmitting(true)
     try {
-      const res = await uploadMock(routes)
+      const res = await uploadMock(routes, expiresInHours)
       setResult(res)
       saveMockId(res.mockId)
       toast.success('Mock created!')
@@ -146,6 +147,21 @@ function CreateMock() {
                   Copy
                 </Button>
               </div>
+            </div>
+
+            <div
+              className="island-shell rounded-xl p-4 md:p-5 border"
+              style={{ borderColor: 'var(--line)' }}
+            >
+              <Label>Expires</Label>
+              <p
+                className="text-sm mt-1"
+                style={{ color: 'var(--sea-ink-soft)' }}
+              >
+                {new Date(
+                  Date.now() + expiresInHours * 3_600_000,
+                ).toLocaleString()}
+              </p>
             </div>
 
             <div>
@@ -345,7 +361,7 @@ function CreateMock() {
                           )
                         })()}
                       <Button
-                        className='btn-primary'
+                        className="btn-primary"
                         type="button"
                         variant="default"
                         size="sm"
@@ -388,6 +404,28 @@ function CreateMock() {
         </div>
 
         <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Expiration</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="space-y-1.5">
+                <Label>Expires after (hours)</Label>
+                <Input
+                  type="number"
+                  min={1}
+                  value={expiresInHours}
+                  onChange={(e) =>
+                    setExpiresInHours(Math.max(1, Number(e.target.value)))
+                  }
+                />
+              </div>
+              <p className="text-xs" style={{ color: 'var(--sea-ink-soft)' }}>
+                Mock auto-deletes after this time. Default: 168 hours (7 days).
+              </p>
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader>
               <CardTitle className="text-base">
