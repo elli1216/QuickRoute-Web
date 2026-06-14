@@ -157,7 +157,10 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-html,
+html {
+  scroll-behavior: smooth;
+}
+
 body,
 #app {
   min-height: 100%;
