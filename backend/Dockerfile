@@ -2,6 +2,7 @@ FROM bellsoft/liberica-openjdk-alpine:26 AS build
 WORKDIR /app
 COPY mvnw pom.xml ./
 COPY .mvn .mvn
+RUN chmod +x mvnw && sed -i 's/\r$//' mvnw
 RUN --mount=type=cache,target=/root/.m2 ./mvnw dependency:go-offline -q
 COPY src ./src
 RUN --mount=type=cache,target=/root/.m2 ./mvnw package -DskipTests -q
