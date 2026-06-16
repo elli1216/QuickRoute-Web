@@ -16,7 +16,7 @@ public class JsonObjectConverter implements AttributeConverter<Object, String> {
         try {
             return mapper.writeValueAsString(attribute);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Failed to serialize responseBody", e);
+            throw new RuntimeException("Failed to serialize responseBody: " + attribute.getClass().getName(), e);
         }
     }
 
