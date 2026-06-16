@@ -12,28 +12,30 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.lang.reflect.Method;
-import java.util.Map;
 
 @Component
 public class DynamicRouteRegistrar {
 
-    private final RequestMappingHandlerMapping handlerMapping;
-    private final MockRequestHandler mockHandler;
-    private final Method handlerMethod;
+    @Qualifier("requestMappingHandlerMapping")
+    private RequestMappingHandlerMapping handlerMapping;
 
-    public DynamicRouteRegistrar(
-            @Qualifier("requestMappingHandlerMapping") RequestMappingHandlerMapping handlerMapping,
-            MockRequestHandler mockHandler) {
+    private MockRequestHandler mockHandler;
+
+    private Method handlerMethod;
+
+    public DynamicRouteRegistrar(RequestMappingHandlerMapping handlerMapping, MockRequestHandler mockHandler,
+            Method handlerMethod) {
         this.handlerMapping = handlerMapping;
         this.mockHandler = mockHandler;
+        this.handlerMethod = handlerMethod;
+    }
+
+    public DynamicRouteRegistrar() {
         try {
-            this.handlerMethod = MockRequestHandler.class.getMethod(
-                    "handle",
-                    HttpServletRequest.class,
-                    HttpServletResponse.class,
-                    Map.class);
+            handlerMethod = MockRequestHandler.class.getMethod("handle",
+                    HttpServletRequest.class, HttpServletResponse.class);
         } catch (NoSuchMethodException e) {
-            throw new RouteRegistrationException("Handler method not found", e);
+            throw new RouteRegistrationException("Failed to find handler method", e);
         }
     }
 
