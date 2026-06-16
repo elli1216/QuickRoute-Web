@@ -60,6 +60,23 @@ public class MockManagementController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/mock/{mockId}")
+    public ResponseEntity<MockSummaryDto> getMock(@PathVariable String mockId) {
+        MockConfiguration config = registry.getMock(mockId);
+        if (config == null) {
+            throw new MockNotFoundException(mockId);
+        }
+        return ResponseEntity.ok(new MockSummaryDto(
+                config.getId(),
+                config.getRoutes().size(),
+                config.getCreatedAt(),
+                config.getExpiresAt(),
+                config.getRoutes().stream()
+                        .map(r -> new RouteResponseDto(r.getMethod(), r.getPathPattern(), r.getStatusCode(),
+                                r.getDelayMs()))
+                        .toList()));
+    }
+
     @DeleteMapping("/mock/{mockId}")
     public ResponseEntity<Void> deleteMock(@PathVariable String mockId) {
         List<RouteDefinition> routes = registry.getRoutes(mockId);
