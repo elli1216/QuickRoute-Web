@@ -1,7 +1,8 @@
 package com.elli.mockserver.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.elli.mockserver.config.JsonObjectConverter;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,7 +21,7 @@ public class RouteDefinition {
 
     @ManyToOne
     @JoinColumn(name = "mock_id")
-    @JsonIgnore
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private MockConfiguration mock;
 
     private String method;
@@ -28,6 +29,7 @@ public class RouteDefinition {
     private String pathPattern;
 
     @Column(columnDefinition = "TEXT")
+    @Convert(converter = JsonObjectConverter.class)
     private Object responseBody;
 
     private int delayMs;
