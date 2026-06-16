@@ -3,6 +3,7 @@ package com.elli.mockserver.service;
 import com.elli.mockserver.model.MockConfiguration;
 import com.elli.mockserver.model.RouteDefinition;
 import com.elli.mockserver.repository.MockConfigurationRepository;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +26,7 @@ public class MockRegistryService {
 
     private final DynamicRouteRegistrar routeRegistrar;
 
-    public MockRegistryService(MockConfigurationRepository mockRepo, DynamicRouteRegistrar routeRegistrar) {
+    public MockRegistryService(MockConfigurationRepository mockRepo, @Lazy DynamicRouteRegistrar routeRegistrar) {
         this.mockRepo = mockRepo;
         this.routeRegistrar = routeRegistrar;
     }

@@ -16,23 +16,19 @@ import java.lang.reflect.Method;
 @Component
 public class DynamicRouteRegistrar {
 
-    @Qualifier("requestMappingHandlerMapping")
-    private RequestMappingHandlerMapping handlerMapping;
+    private final RequestMappingHandlerMapping handlerMapping;
 
-    private MockRequestHandler mockHandler;
+    private final MockRequestHandler mockHandler;
 
-    private Method handlerMethod;
+    private final Method handlerMethod;
 
-    public DynamicRouteRegistrar(RequestMappingHandlerMapping handlerMapping, MockRequestHandler mockHandler,
-            Method handlerMethod) {
+    public DynamicRouteRegistrar(
+            @Qualifier("requestMappingHandlerMapping") RequestMappingHandlerMapping handlerMapping,
+            MockRequestHandler mockHandler) {
         this.handlerMapping = handlerMapping;
         this.mockHandler = mockHandler;
-        this.handlerMethod = handlerMethod;
-    }
-
-    public DynamicRouteRegistrar() {
         try {
-            handlerMethod = MockRequestHandler.class.getMethod("handle",
+            this.handlerMethod = MockRequestHandler.class.getMethod("handle",
                     HttpServletRequest.class, HttpServletResponse.class);
         } catch (NoSuchMethodException e) {
             throw new RouteRegistrationException("Failed to find handler method", e);

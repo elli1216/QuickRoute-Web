@@ -46,11 +46,7 @@ function MyMocks() {
           style={{ borderColor: 'var(--line)' }}
         >
           <p style={{ color: '#ef4444' }}>
-            Failed to load mocks. Is the server running?
-          </p>
-          <p className="text-sm mt-2" style={{ color: 'var(--sea-ink-soft)' }}>
-            Make sure the backend is started on{' '}
-            <code>http://localhost:8080</code>
+            Failed to load mocks. Maybe the server is not running.
           </p>
         </div>
       )}
