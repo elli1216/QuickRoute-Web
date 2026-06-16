@@ -89,6 +89,12 @@ export async function listMocks(): Promise<Record<string, MockSummary>> {
   return res.json()
 }
 
+export async function getMock(mockId: string): Promise<MockSummary> {
+  const res = await fetch(`${BASE}/mock/${mockId}`)
+  if (!res.ok) throw new Error('Mock not found')
+  return res.json()
+}
+
 export async function deleteMock(mockId: string): Promise<void> {
   const res = await fetch(`${BASE}/mock/${mockId}`, { method: 'DELETE' })
   if (!res.ok) throw new Error('Delete failed')

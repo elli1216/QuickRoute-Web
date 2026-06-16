@@ -30,27 +30,23 @@ const emptyRoute = (): RouteFormInput => ({
   body: '',
 })
 
-function loadSavedMockIds(): string[] {
-  try {
-    return JSON.parse(localStorage.getItem('quickroute-mock-ids') || '[]')
-  } catch {
-    return []
-  }
-}
-
 function saveMockId(id: string) {
-  const ids = loadSavedMockIds().filter((x) => x !== id)
+  const ids: string[] = (() => {
+    try {
+      return JSON.parse(localStorage.getItem('quickroute-mock-ids') || '[]')
+    } catch {
+      return []
+    }
+  })().filter((x: string) => x !== id)
   ids.unshift(id)
   localStorage.setItem('quickroute-mock-ids', JSON.stringify(ids.slice(0, 20)))
 }
 
 function CreateMock() {
   const [routes, setRoutes] = useState<RouteFormInput[]>([emptyRoute()])
-  const [existingMockId, setExistingMockId] = useState('')
   const [expiresInHours, setExpiresInHours] = useState(168)
   const [result, setResult] = useState<MockUploadResult | null>(null)
   const [submitting, setSubmitting] = useState(false)
-  const savedIds = loadSavedMockIds()
 
   const updateRoute = useCallback(
     (i: number, field: keyof RouteFormInput, value: string | number) => {
@@ -110,7 +106,6 @@ function CreateMock() {
 
   const resetForm = useCallback(() => {
     setRoutes([emptyRoute()])
-    setExistingMockId('')
     setResult(null)
   }, [])
 
@@ -425,46 +420,6 @@ function CreateMock() {
               </p>
             </CardContent>
           </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">
-                Existing Mock ID (optional)
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Input
-                placeholder="Paste mock ID..."
-                value={existingMockId}
-                onChange={(e) => setExistingMockId(e.target.value)}
-              />
-              <p className="text-xs" style={{ color: 'var(--sea-ink-soft)' }}>
-                Enter a mock ID to resume editing. Routes you create here will
-                be added alongside existing ones.
-              </p>
-            </CardContent>
-          </Card>
-
-          {savedIds.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Recent Mock IDs</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {savedIds.map((id) => (
-                  <Button
-                    key={id}
-                    variant="outline"
-                    size="sm"
-                    className="w-full justify-start truncate font-mono text-xs"
-                    onClick={() => setExistingMockId(id)}
-                  >
-                    {id}
-                  </Button>
-                ))}
-              </CardContent>
-            </Card>
-          )}
         </div>
       </div>
       <Toaster />
