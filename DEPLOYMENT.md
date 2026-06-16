@@ -39,10 +39,10 @@ git push -u origin main
    - Go to **New +** → **PostgreSQL**
    - Choose a name, region, and **Free** plan
    - After creation, copy the **Internal Database URL** (looks like `postgres://user:pass@host:port/db`)
-6. Go back to your Web Service → **Environment** → **Add Environment Variable**:
+6. Go back to your Web Service → **Environment** → **Add Environment Variables**:
    | Variable | Value |
    |----------|-------|
-   | `DATABASE_URL` | Paste the Internal Database URL from step 5 |
+   | `SPRING_DATASOURCE_URL` | `jdbc:` + the Internal Database URL from step 5 (e.g. `jdbc:postgresql://user:pass@host:port/db`) |
    | `SPRING_PROFILES_ACTIVE` | `prod` |
 7. Render will auto-deploy after adding env vars. Your backend is live at `https://<service-name>.onrender.com`.
 
