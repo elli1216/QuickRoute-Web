@@ -5,37 +5,33 @@ import com.elli.mockserver.handler.MockRequestHandler;
 import com.elli.mockserver.model.RouteDefinition;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.lang.reflect.Method;
+import java.util.Map;
 
 @Component
 public class DynamicRouteRegistrar {
 
-    @Qualifier("requestMappingHandlerMapping")
-    private RequestMappingHandlerMapping handlerMapping;
+    private final RequestMappingHandlerMapping handlerMapping;
+    private final MockRequestHandler mockHandler;
+    private final Method handlerMethod;
 
-    private MockRequestHandler mockHandler;
-
-    private Method handlerMethod;
-
-    public DynamicRouteRegistrar(RequestMappingHandlerMapping handlerMapping, MockRequestHandler mockHandler,
-            Method handlerMethod) {
+    public DynamicRouteRegistrar(RequestMappingHandlerMapping handlerMapping,
+            MockRequestHandler mockHandler) {
         this.handlerMapping = handlerMapping;
         this.mockHandler = mockHandler;
-        this.handlerMethod = handlerMethod;
-    }
-
-    public DynamicRouteRegistrar() {
         try {
-            handlerMethod = MockRequestHandler.class.getMethod("handle",
-                    HttpServletRequest.class, HttpServletResponse.class);
+            this.handlerMethod = MockRequestHandler.class.getMethod(
+                    "handle",
+                    HttpServletRequest.class,
+                    HttpServletResponse.class,
+                    Map.class);
         } catch (NoSuchMethodException e) {
-            throw new RouteRegistrationException("Failed to find handler method", e);
+            throw new RouteRegistrationException("Handler method not found", e);
         }
     }
 
