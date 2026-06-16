@@ -33,3 +33,5 @@ build/
 .vscode/
 
 mock-store
+
+.env
