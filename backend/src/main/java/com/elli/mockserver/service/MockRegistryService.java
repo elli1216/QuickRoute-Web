@@ -3,7 +3,9 @@ package com.elli.mockserver.service;
 import com.elli.mockserver.model.MockConfiguration;
 import com.elli.mockserver.model.RouteDefinition;
 import com.elli.mockserver.repository.MockConfigurationRepository;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -114,6 +116,17 @@ public class MockRegistryService {
                 routeRegistrar.unregisterRoute(mock.getId(), route);
             }
             mockRepo.delete(mock);
+        }
+    }
+
+    @EventListener(ApplicationReadyEvent.class)
+    @Transactional(readOnly = true)
+    public void reRegisterRoutesOnStartup() {
+        List<MockConfiguration> mocks = mockRepo.findAll();
+        for (MockConfiguration mock : mocks) {
+            for (RouteDefinition route : mock.getRoutes()) {
+                routeRegistrar.registerRoute(mock.getId(), route);
+            }
         }
     }
 
