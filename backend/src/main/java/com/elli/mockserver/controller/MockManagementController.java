@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 public class MockManagementController {
@@ -117,4 +119,10 @@ public class MockManagementController {
         }
         return routes;
     }
+
+    @GetMapping("/ping")
+    public ResponseEntity<String> keepBackendAlive() {
+        return ResponseEntity.ok("Server is pinged.");
+    }
+
 }
