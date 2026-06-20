@@ -3,7 +3,6 @@ import { useState, useCallback } from 'react'
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
-import { Textarea } from '#/components/ui/textarea'
 import {
   Select,
   SelectContent,
@@ -13,10 +12,10 @@ import {
 } from '#/components/ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
 import { Toaster, toast } from 'sonner'
-import { CheckCircle, XCircle } from 'lucide-react'
 import type { RouteFormInput, MockUploadResult } from '#/lib/api'
 import { uploadMock, buildEndpointUrl, buildCurl } from '#/lib/api'
-import { validateJson, formatJson } from '#/lib/json'
+import type { FieldNode } from '#/lib/field-builder'
+import { FieldBuilder } from '#/components/field-builder'
 
 export const Route = createFileRoute('/create')({ component: CreateMock })
 
@@ -44,6 +43,7 @@ function saveMockId(id: string) {
 
 function CreateMock() {
   const [routes, setRoutes] = useState<RouteFormInput[]>([emptyRoute()])
+  const [fieldTrees, setFieldTrees] = useState<FieldNode[][]>([[]])
   const [expiresInHours, setExpiresInHours] = useState(168)
   const [result, setResult] = useState<MockUploadResult | null>(null)
   const [submitting, setSubmitting] = useState(false)
@@ -60,12 +60,24 @@ function CreateMock() {
     [],
   )
 
+  const updateFieldTree = useCallback((i: number, nodes: FieldNode[]) => {
+    setFieldTrees((prev) => {
+      const next = [...prev]
+      next[i] = nodes
+      return next
+    })
+  }, [])
+
   const addRoute = useCallback(() => {
     setRoutes((prev) => [...prev, emptyRoute()])
+    setFieldTrees((prev) => [...prev, []])
   }, [])
 
   const removeRoute = useCallback((i: number) => {
     setRoutes((prev) =>
+      prev.length > 1 ? prev.filter((_, j) => j !== i) : prev,
+    )
+    setFieldTrees((prev) =>
       prev.length > 1 ? prev.filter((_, j) => j !== i) : prev,
     )
   }, [])
@@ -77,13 +89,6 @@ function CreateMock() {
       if (r.status < 100 || r.status > 599)
         errors.push(`Route ${i + 1}: status must be 100-599`)
       if (r.delay < 0) errors.push(`Route ${i + 1}: delay must be >= 0`)
-      if (r.body.trim()) {
-        try {
-          JSON.parse(r.body)
-        } catch {
-          errors.push(`Route ${i + 1}: body is not valid JSON`)
-        }
-      }
     })
 
     if (errors.length > 0) {
@@ -106,6 +111,7 @@ function CreateMock() {
 
   const resetForm = useCallback(() => {
     setRoutes([emptyRoute()])
+    setFieldTrees([[]])
     setResult(null)
   }, [])
 
@@ -340,62 +346,47 @@ function CreateMock() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <Label>Response Body (JSON)</Label>
-                    <div className="flex items-center gap-2">
-                      {route.body.trim() &&
-                        (() => {
-                          const check = validateJson(route.body)
-                          return check.valid ? (
-                            <CheckCircle
-                              size={14}
-                              style={{ color: '#16a34a' }}
-                            />
-                          ) : (
-                            <XCircle size={14} style={{ color: '#dc2626' }} />
-                          )
-                        })()}
-                      <Button
-                        className="btn-primary"
-                        type="button"
-                        variant="default"
-                        size="sm"
-                        onClick={() =>
-                          updateRoute(i, 'body', formatJson(route.body))
-                        }
-                      >
-                        Format
-                      </Button>
-                    </div>
-                  </div>
-                  <Textarea
-                    placeholder='{"message": "Hello"}'
-                    className="font-mono text-sm min-h-25"
-                    value={route.body}
-                    onChange={(e) => updateRoute(i, 'body', e.target.value)}
+                  <Label>Response Body</Label>
+                  <FieldBuilder
+                    nodes={fieldTrees[i] || []}
+                    onChange={(nodes) => updateFieldTree(i, nodes)}
+                    onJsonChange={(json) => updateRoute(i, 'body', json)}
                   />
-                  {route.body.trim() && !validateJson(route.body).valid && (
-                    <p className="text-xs mt-1" style={{ color: '#dc2626' }}>
-                      {validateJson(route.body).error}
-                    </p>
+                  {route.body.trim() && (
+                    <details className="mt-2">
+                      <summary
+                        className="text-xs cursor-pointer select-none"
+                        style={{ color: 'var(--sea-ink-soft)' }}
+                      >
+                        Preview JSON
+                      </summary>
+                      <pre
+                        className="mt-1 p-3 rounded-xl text-xs overflow-x-auto max-w-full"
+                        style={{ background: '#1d2e45', color: '#e8efff' }}
+                      >
+                        <code>{route.body}</code>
+                      </pre>
+                    </details>
                   )}
                 </div>
               </CardContent>
             </Card>
           ))}
 
-          <Button variant="outline" onClick={addRoute} className="w-full">
-            + Add Route
-          </Button>
+          <div className="flex w-full items-center justify-end gap-2">
+            <Button variant="outline" onClick={addRoute} className="w-fit">
+              + Add Route
+            </Button>
 
-          <Button
-            onClick={handleSubmit}
-            disabled={submitting}
-            className="w-full"
-            size="lg"
-          >
-            {submitting ? 'Uploading...' : 'Create Mock'}
-          </Button>
+            <Button
+              onClick={handleSubmit}
+              disabled={submitting}
+              className="w-fit"
+              size="lg"
+            >
+              {submitting ? 'Uploading...' : 'Create Mock'}
+            </Button>
+          </div>
         </div>
 
         <div className="space-y-6">

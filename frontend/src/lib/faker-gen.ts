@@ -1,0 +1,65 @@
+import { faker } from '@faker-js/faker'
+
+const KEY_MAP: Partial<Record<string, () => string>> = {
+  id: () => String(faker.number.int({ min: 1, max: 99999 })),
+  name: () => faker.person.fullName(),
+  firstName: () => faker.person.firstName(),
+  lastName: () => faker.person.lastName(),
+  fullName: () => faker.person.fullName(),
+  username: () => faker.internet.username(),
+  email: () => faker.internet.email(),
+  phone: () => faker.phone.number(),
+  phoneNumber: () => faker.phone.number(),
+  mobile: () => faker.phone.number(),
+  address: () => faker.location.streetAddress(),
+  street: () => faker.location.streetAddress(),
+  city: () => faker.location.city(),
+  state: () => faker.location.state(),
+  country: () => faker.location.country(),
+  zip: () => faker.location.zipCode(),
+  zipCode: () => faker.location.zipCode(),
+  postcode: () => faker.location.zipCode(),
+  lat: () => String(faker.location.latitude()),
+  lng: () => String(faker.location.longitude()),
+  latitude: () => String(faker.location.latitude()),
+  longitude: () => String(faker.location.longitude()),
+  website: () => faker.internet.url(),
+  url: () => faker.internet.url(),
+  avatar: () => faker.image.avatar(),
+  image: () => faker.image.url(),
+  title: () => faker.lorem.sentence({ min: 2, max: 6 }),
+  description: () => faker.lorem.sentences({ min: 1, max: 3 }),
+  body: () => faker.lorem.paragraph(),
+  text: () => faker.lorem.paragraph(),
+  content: () => faker.lorem.paragraphs(),
+  summary: () => faker.lorem.sentences({ min: 1, max: 2 }),
+  tag: () => faker.lorem.word(),
+  tags: () => JSON.stringify(faker.lorem.words({ min: 2, max: 5 }).split(' ')),
+  slug: () => faker.lorem.slug(),
+  uuid: () => faker.string.uuid(),
+  color: () => faker.color.rgb(),
+  hex: () => faker.color.rgb(),
+  company: () => faker.company.name(),
+  department: () => faker.commerce.department(),
+  product: () => faker.commerce.productName(),
+  price: () => String(faker.commerce.price()),
+  quantity: () => String(faker.number.int({ min: 1, max: 100 })),
+  count: () => String(faker.number.int({ min: 0, max: 1000 })),
+  age: () => String(faker.number.int({ min: 18, max: 90 })),
+  date: () => faker.date.anytime().toISOString().split('T')[0],
+  createdAt: () => faker.date.past().toISOString(),
+  updatedAt: () => faker.date.recent().toISOString(),
+  timestamp: () => String(faker.date.recent().getTime()),
+  status: () => faker.helpers.arrayElement(['active', 'inactive', 'pending']),
+  role: () => faker.person.jobTitle(),
+  jobTitle: () => faker.person.jobTitle(),
+  job: () => faker.person.jobTitle(),
+}
+
+export function generateFieldValue(key: string, type: string): string {
+  const gen = KEY_MAP[key.toLowerCase()]
+  if (gen) return gen()
+  if (type === 'number') return String(faker.number.int({ min: 1, max: 999 }))
+  if (type === 'boolean') return String(faker.datatype.boolean())
+  return faker.lorem.word()
+}
