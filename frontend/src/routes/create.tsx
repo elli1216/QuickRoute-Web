@@ -19,10 +19,9 @@ import { formatJson } from '#/lib/json'
 import { jsonToFieldNodes } from '#/lib/field-builder'
 import type { FieldNode } from '#/lib/field-builder'
 import { FieldBuilder } from '#/components/field-builder'
+import { METHODS, STATUSES } from '#/lib/create'
 
 export const Route = createFileRoute('/create')({ component: CreateMock })
-
-const METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'] as const
 
 const emptyRoute = (): RouteFormInput => ({
   method: 'GET',
@@ -163,7 +162,7 @@ function CreateMock() {
 
   if (result) {
     return (
-      <div className="page-wrap py-8 md:py-12 px-4 md:px-0">
+      <div className="page-wrap max-w-3xl py-8 md:py-12 px-4 md:px-0">
         <Card>
           <CardHeader>
             <CardTitle className="display-title text-xl md:text-2xl">
@@ -306,20 +305,13 @@ function CreateMock() {
 
   return (
     <div className="page-wrap py-8 md:py-12 px-4 md:px-0">
-      <div className="mb-6 md:mb-8">
-        <h1 className="display-title text-2xl md:text-4xl font-bold">
-          Create a Mock
-        </h1>
-        <p
-          className="mt-2 text-sm md:text-base"
-          style={{ color: 'var(--sea-ink-soft)' }}
-        >
-          Define your API routes and get a live mock endpoint instantly.
-        </p>
-      </div>
-
-      <div className="grid lg:grid-cols-3 gap-6 md:gap-8">
-        <div className="lg:col-span-2 space-y-6">
+      <div className="space-y-6 flex flex-col items-center justify-center ">
+        <div className="mb-6 md:mb-8">
+          <h1 className="display-title text-2xl md:text-4xl font-bold flex items-center justify-center">
+            Create a Mock
+          </h1>
+        </div>
+        <div className="flex flex-col gap-4 max-w-3xl">
           {routes.map((route, i) => (
             <Card key={i}>
               <CardHeader className="pb-3">
@@ -368,15 +360,25 @@ function CreateMock() {
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
                     <Label>Status</Label>
-                    <Input
-                      type="number"
-                      min={100}
-                      max={599}
-                      value={route.status}
-                      onChange={(e) =>
-                        updateRoute(i, 'status', Number(e.target.value))
-                      }
-                    />
+                    <Select
+                      value={String(route.status)}
+                      onValueChange={(v) => updateRoute(i, 'status', Number(v))}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {STATUSES.map((s) => (
+                          <SelectItem
+                            key={s.code}
+                            value={String(s.code)}
+                            className="text-xs"
+                          >
+                            {s.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div className="space-y-1.5">
                     <Label>Delay (ms)</Label>
@@ -397,11 +399,10 @@ function CreateMock() {
                     <div className="flex gap-1">
                       <button
                         type="button"
-                        className={`text-xs px-2 py-1 rounded-sm transition-colors ${
-                          (responseModes[i] ?? 'field') === 'field'
-                            ? 'font-semibold'
-                            : 'opacity-60 hover:opacity-100'
-                        }`}
+                        className={`text-xs px-2 py-1 rounded-sm transition-colors ${(responseModes[i] ?? 'field') === 'field'
+                          ? 'font-semibold'
+                          : 'opacity-60 hover:opacity-100'
+                          }`}
                         style={{
                           background:
                             (responseModes[i] ?? 'field') === 'field'
@@ -418,11 +419,10 @@ function CreateMock() {
                       </button>
                       <button
                         type="button"
-                        className={`text-xs px-2 py-1 rounded-sm transition-colors ${
-                          (responseModes[i] ?? 'field') === 'json'
-                            ? 'font-semibold'
-                            : 'opacity-60 hover:opacity-100'
-                        }`}
+                        className={`text-xs px-2 py-1 rounded-sm transition-colors ${(responseModes[i] ?? 'field') === 'json'
+                          ? 'font-semibold'
+                          : 'opacity-60 hover:opacity-100'
+                          }`}
                         style={{
                           background:
                             (responseModes[i] ?? 'field') === 'json'
@@ -524,23 +524,6 @@ function CreateMock() {
             </Card>
           ))}
 
-          <div className="flex w-full items-center justify-end gap-2">
-            <Button variant="outline" onClick={addRoute} className="w-fit">
-              + Add Route
-            </Button>
-
-            <Button
-              onClick={handleSubmit}
-              disabled={submitting}
-              className="w-fit"
-              size="lg"
-            >
-              {submitting ? 'Uploading...' : 'Create Mock'}
-            </Button>
-          </div>
-        </div>
-
-        <div className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle className="text-base">Expiration</CardTitle>
@@ -562,6 +545,21 @@ function CreateMock() {
               </p>
             </CardContent>
           </Card>
+
+          <div className="flex w-full items-center justify-end gap-2">
+            <Button variant="outline" onClick={addRoute} className="w-fit">
+              + Add Route
+            </Button>
+
+            <Button
+              onClick={handleSubmit}
+              disabled={submitting}
+              className="w-fit"
+              size="lg"
+            >
+              {submitting ? 'Uploading...' : 'Create Mock'}
+            </Button>
+          </div>
         </div>
       </div>
       <Toaster />
