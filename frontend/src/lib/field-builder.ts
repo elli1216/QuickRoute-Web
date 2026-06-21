@@ -52,3 +52,71 @@ function nodeToValue(node: FieldNode): unknown {
   }
   return node.value
 }
+
+function valueToFieldNode(key: string, value: unknown): FieldNode {
+  if (value === null) {
+    return {
+      id: createFieldId(),
+      key,
+      type: 'string',
+      value: 'null',
+      children: [],
+    }
+  }
+  if (Array.isArray(value)) {
+    return {
+      id: createFieldId(),
+      key,
+      type: 'array',
+      value: '',
+      children: value.map((v) => valueToFieldNode('', v)),
+    }
+  }
+  if (typeof value === 'object') {
+    return {
+      id: createFieldId(),
+      key,
+      type: 'object',
+      value: '',
+      children: Object.entries(value).map(([k, v]) => valueToFieldNode(k, v)),
+    }
+  }
+  if (typeof value === 'number') {
+    return {
+      id: createFieldId(),
+      key,
+      type: 'number',
+      value: String(value),
+      children: [],
+    }
+  }
+  if (typeof value === 'boolean') {
+    return {
+      id: createFieldId(),
+      key,
+      type: 'boolean',
+      value: String(value),
+      children: [],
+    }
+  }
+  return {
+    id: createFieldId(),
+    key,
+    type: 'string',
+    value: String(value),
+    children: [],
+  }
+}
+
+export function jsonToFieldNodes(json: string): FieldNode[] {
+  const parsed = JSON.parse(json)
+  if (Array.isArray(parsed)) {
+    return [valueToFieldNode('', parsed)]
+  }
+  if (typeof parsed === 'object' && parsed !== null) {
+    return Object.entries(parsed).map(([key, value]) =>
+      valueToFieldNode(key, value),
+    )
+  }
+  return [valueToFieldNode('', parsed)]
+}

@@ -3,6 +3,7 @@ import { useState, useCallback } from 'react'
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
+import { Textarea } from '#/components/ui/textarea'
 import {
   Select,
   SelectContent,
@@ -14,6 +15,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
 import { Toaster, toast } from 'sonner'
 import type { RouteFormInput, MockUploadResult } from '#/lib/api'
 import { uploadMock, buildEndpointUrl, buildCurl } from '#/lib/api'
+import { formatJson } from '#/lib/json'
+import { jsonToFieldNodes } from '#/lib/field-builder'
 import type { FieldNode } from '#/lib/field-builder'
 import { FieldBuilder } from '#/components/field-builder'
 
@@ -45,6 +48,9 @@ function CreateMock() {
   const [routes, setRoutes] = useState<RouteFormInput[]>([emptyRoute()])
   const [fieldTrees, setFieldTrees] = useState<FieldNode[][]>([[]])
   const [expiresInHours, setExpiresInHours] = useState(168)
+  const [responseModes, setResponseModes] = useState<('field' | 'json')[]>(() =>
+    routes.map(() => 'field' as const),
+  )
   const [result, setResult] = useState<MockUploadResult | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
@@ -68,9 +74,45 @@ function CreateMock() {
     })
   }, [])
 
+  const setResponseMode = useCallback(
+    (index: number, mode: 'field' | 'json') => {
+      if (mode === 'json') {
+        setResponseModes((prev) => {
+          const next = [...prev]
+          next[index] = 'json'
+          return next
+        })
+        return
+      }
+      const body = routes[index].body
+      if (!body.trim()) {
+        updateFieldTree(index, [])
+        setResponseModes((prev) => {
+          const next = [...prev]
+          next[index] = 'field'
+          return next
+        })
+        return
+      }
+      try {
+        const nodes = jsonToFieldNodes(body)
+        updateFieldTree(index, nodes)
+        setResponseModes((prev) => {
+          const next = [...prev]
+          next[index] = 'field'
+          return next
+        })
+      } catch {
+        toast.error('Invalid JSON — cannot switch to Field Builder')
+      }
+    },
+    [routes, updateFieldTree],
+  )
+
   const addRoute = useCallback(() => {
     setRoutes((prev) => [...prev, emptyRoute()])
     setFieldTrees((prev) => [...prev, []])
+    setResponseModes((prev) => [...prev, 'field'])
   }, [])
 
   const removeRoute = useCallback((i: number) => {
@@ -78,6 +120,9 @@ function CreateMock() {
       prev.length > 1 ? prev.filter((_, j) => j !== i) : prev,
     )
     setFieldTrees((prev) =>
+      prev.length > 1 ? prev.filter((_, j) => j !== i) : prev,
+    )
+    setResponseModes((prev) =>
       prev.length > 1 ? prev.filter((_, j) => j !== i) : prev,
     )
   }, [])
@@ -112,6 +157,7 @@ function CreateMock() {
   const resetForm = useCallback(() => {
     setRoutes([emptyRoute()])
     setFieldTrees([[]])
+    setResponseModes(['field'])
     setResult(null)
   }, [])
 
@@ -346,27 +392,132 @@ function CreateMock() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label>Response Body</Label>
-                  <FieldBuilder
-                    nodes={fieldTrees[i] || []}
-                    onChange={(nodes) => updateFieldTree(i, nodes)}
-                    onJsonChange={(json) => updateRoute(i, 'body', json)}
-                  />
-                  {route.body.trim() && (
-                    <details className="mt-2">
-                      <summary
-                        className="text-xs cursor-pointer select-none"
-                        style={{ color: 'var(--sea-ink-soft)' }}
+                  <div className="flex items-center justify-between">
+                    <Label>Response Body</Label>
+                    <div className="flex gap-1">
+                      <button
+                        type="button"
+                        className={`text-xs px-2 py-1 rounded-sm transition-colors ${
+                          (responseModes[i] ?? 'field') === 'field'
+                            ? 'font-semibold'
+                            : 'opacity-60 hover:opacity-100'
+                        }`}
+                        style={{
+                          background:
+                            (responseModes[i] ?? 'field') === 'field'
+                              ? 'var(--accent)'
+                              : 'transparent',
+                          color:
+                            (responseModes[i] ?? 'field') === 'field'
+                              ? 'var(--accent-foreground)'
+                              : 'inherit',
+                        }}
+                        onClick={() => setResponseMode(i, 'field')}
                       >
-                        Preview JSON
-                      </summary>
-                      <pre
-                        className="mt-1 p-3 rounded-xl text-xs overflow-x-auto max-w-full"
-                        style={{ background: '#1d2e45', color: '#e8efff' }}
+                        Fields
+                      </button>
+                      <button
+                        type="button"
+                        className={`text-xs px-2 py-1 rounded-sm transition-colors ${
+                          (responseModes[i] ?? 'field') === 'json'
+                            ? 'font-semibold'
+                            : 'opacity-60 hover:opacity-100'
+                        }`}
+                        style={{
+                          background:
+                            (responseModes[i] ?? 'field') === 'json'
+                              ? 'var(--accent)'
+                              : 'transparent',
+                          color:
+                            (responseModes[i] ?? 'field') === 'json'
+                              ? 'var(--accent-foreground)'
+                              : 'inherit',
+                        }}
+                        onClick={() => setResponseMode(i, 'json')}
                       >
-                        <code>{route.body}</code>
-                      </pre>
-                    </details>
+                        Raw JSON
+                      </button>
+                    </div>
+                  </div>
+                  {(responseModes[i] ?? 'field') === 'field' ? (
+                    <>
+                      <FieldBuilder
+                        nodes={fieldTrees[i] || []}
+                        onChange={(nodes) => updateFieldTree(i, nodes)}
+                        onJsonChange={(json) => updateRoute(i, 'body', json)}
+                      />
+                      <div
+                        className="text-xs leading-relaxed p-3 rounded-lg mt-2"
+                        style={{
+                          background:
+                            'color-mix(in srgb, var(--accent) 15%, transparent)',
+                          color: 'var(--sea-ink-soft)',
+                        }}
+                      >
+                        <strong className="font-semibold">
+                          When to use Fields:
+                        </strong>{' '}
+                        Use fields to build complex nested structures — objects
+                        within objects, arrays of objects, or any combination.
+                        Keys only matter inside objects; arrays use indexed
+                        positions. Use <strong>Generate</strong> on an array to
+                        quickly create several copies with auto-generated faker
+                        data.
+                      </div>
+                      {route.body.trim() && (
+                        <details className="mt-2">
+                          <summary
+                            className="text-xs cursor-pointer select-none"
+                            style={{ color: 'var(--sea-ink-soft)' }}
+                          >
+                            Preview JSON
+                          </summary>
+                          <pre
+                            className="mt-1 p-3 rounded-xl text-xs overflow-x-auto max-w-full"
+                            style={{
+                              background: '#1d2e45',
+                              color: '#e8efff',
+                            }}
+                          >
+                            <code>{route.body}</code>
+                          </pre>
+                        </details>
+                      )}
+                    </>
+                  ) : (
+                    <div className="space-y-2">
+                      <Textarea
+                        className="min-h-32 font-mono text-xs"
+                        placeholder='{"key": "value"}'
+                        value={route.body}
+                        onChange={(e) => updateRoute(i, 'body', e.target.value)}
+                        spellCheck={false}
+                      />
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          type="button"
+                          onClick={() => {
+                            const formatted = formatJson(route.body)
+                            if (formatted !== route.body) {
+                              updateRoute(i, 'body', formatted)
+                            } else if (
+                              route.body.trim() &&
+                              formatted === route.body
+                            ) {
+                              try {
+                                JSON.parse(route.body)
+                              } catch {
+                                toast.error('Invalid JSON — cannot format')
+                              }
+                            }
+                          }}
+                        >
+                          Format
+                        </Button>
+                      </div>
+                    </div>
                   )}
                 </div>
               </CardContent>

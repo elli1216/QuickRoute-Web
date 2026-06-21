@@ -116,31 +116,6 @@ export function FieldBuilder({ nodes, onChange, onJsonChange }: Props) {
         list.map((n) => {
           if (n.id !== nodeId) return { ...n, children: generate(n.children) }
 
-          if (n.type === 'object') {
-            if (n.children.length === 0) {
-              return {
-                ...n,
-                type: 'array',
-                children: Array.from({ length: count }, () =>
-                  createField({
-                    key: 'item',
-                    type: 'string',
-                    value: generateFieldValue('item', 'string'),
-                  }),
-                ),
-              }
-            }
-            return {
-              ...n,
-              type: 'array',
-              children: Array.from({ length: count }, () => {
-                const item = createField({ key: n.key, type: 'object' })
-                item.children = n.children.map(cloneWithFaker)
-                return item
-              }),
-            }
-          }
-
           if (n.children.length === 0) {
             return {
               ...n,
@@ -170,19 +145,30 @@ export function FieldBuilder({ nodes, onChange, onJsonChange }: Props) {
     [nodes, onChange, onJsonChange, generateCounts],
   )
 
-  const renderRow = (node: FieldNode, depth: number) => (
+  const renderRow = (
+    node: FieldNode,
+    depth: number,
+    parentIsArray?: boolean,
+  ) => (
     <div
       key={node.id}
       className="flex flex-col"
       style={{ marginLeft: depth * 20 }}
     >
       <div className="flex items-center gap-2 py-1.5">
-        <Input
-          placeholder="key"
-          className="h-8 w-28 text-xs font-mono shrink-0"
-          value={node.key}
-          onChange={(e) => updateNode(node.id, { key: e.target.value })}
-        />
+        {parentIsArray ||
+        (depth === 0 && (node.type === 'object' || node.type === 'array')) ? (
+          <span className="h-8 w-28 shrink-0 flex items-center text-xs font-mono opacity-40 select-none">
+            {parentIsArray ? '(indexed)' : '(root)'}
+          </span>
+        ) : (
+          <Input
+            placeholder="key"
+            className="h-8 w-28 text-xs font-mono shrink-0"
+            value={node.key}
+            onChange={(e) => updateNode(node.id, { key: e.target.value })}
+          />
+        )}
         <Select
           value={node.type}
           onValueChange={(v: string) =>
@@ -261,8 +247,10 @@ export function FieldBuilder({ nodes, onChange, onJsonChange }: Props) {
         </Button>
       </div>
       {(node.type === 'object' || node.type === 'array') &&
-        node.children.map((child) => renderRow(child, depth + 1))}
-      {(node.type === 'array' || node.type === 'object') && (
+        node.children.map((child) =>
+          renderRow(child, depth + 1, node.type === 'array'),
+        )}
+      {node.type === 'array' && (
         <div
           className="flex items-center gap-2 ml-5 mt-1 mb-1"
           style={{ marginLeft: (depth + 1) * 20 }}
@@ -288,12 +276,10 @@ export function FieldBuilder({ nodes, onChange, onJsonChange }: Props) {
             className="h-7 text-xs"
             onClick={() => generateItems(node.id)}
           >
-            Generate Items
+            Generate
           </Button>
           <span className="text-xs" style={{ color: 'var(--sea-ink-soft)' }}>
-            {node.type === 'object'
-              ? 'Convert to array & generate multiple faked items'
-              : 'Generate multiple faked items'}
+            Generate N items with random data
           </span>
         </div>
       )}
