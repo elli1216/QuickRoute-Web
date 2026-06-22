@@ -311,7 +311,7 @@ function CreateMock() {
             Create a Mock
           </h1>
         </div>
-        <div className="flex flex-col gap-4 max-w-3xl">
+        <div className="flex flex-col gap-4 w-full max-w-3xl">
           {routes.map((route, i) => (
             <Card key={i}>
               <CardHeader className="pb-3">
@@ -487,7 +487,7 @@ function CreateMock() {
                   ) : (
                     <div className="space-y-2">
                       <Textarea
-                        className="min-h-32 font-mono text-xs"
+                        className="min-h-32 max-w-3xl font-mono text-xs"
                         placeholder='{"key": "value"}'
                         value={route.body}
                         onChange={(e) => updateRoute(i, 'body', e.target.value)}
