@@ -163,7 +163,7 @@ function CreateMock() {
   if (result) {
     return (
       <div className="page-wrap max-w-3xl py-8 md:py-12 px-4 md:px-0">
-        <Card>
+        <Card className="card-glass">
           <CardHeader>
             <CardTitle className="display-title text-xl md:text-2xl">
               Mock Created!
@@ -313,7 +313,7 @@ function CreateMock() {
         </div>
         <div className="flex flex-col gap-4 w-full max-w-3xl">
           {routes.map((route, i) => (
-            <Card key={i}>
+            <Card key={i} className="card-glass">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-base">Route {i + 1}</CardTitle>
@@ -524,7 +524,7 @@ function CreateMock() {
             </Card>
           ))}
 
-          <Card>
+          <Card className="card-glass">
             <CardHeader>
               <CardTitle className="text-base">Expiration</CardTitle>
             </CardHeader>
@@ -554,7 +554,7 @@ function CreateMock() {
             <Button
               onClick={handleSubmit}
               disabled={submitting}
-              className="w-fit"
+              className="w-fit glow-button"
               size="lg"
             >
               {submitting ? 'Uploading...' : 'Create Mock'}

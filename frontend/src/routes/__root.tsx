@@ -12,6 +12,8 @@ import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 import appCss from '../styles.css?url'
 
 import type { QueryClient } from '@tanstack/react-query'
+import { ThemeProvider } from '#/components/theme-provider'
+import { ModeToggle } from '#/components/mode-toggle'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -48,10 +50,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <nav
-          className="page-wrap flex items-center gap-4 md:gap-6 py-3 md:py-4 px-4 md:px-0"
-          style={{ borderBottom: '1px solid var(--line)' }}
-        >
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <nav
+            className="page-wrap flex items-center gap-4 md:gap-6 py-3 md:py-4 px-6 md:px-8 sticky top-4 z-50 island-shell mt-4"
+          >
           <Link
             to="/"
             className="nav-link flex items-center gap-2"
@@ -79,6 +81,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           >
             My Mocks
           </Link>
+          <div className="ml-auto flex items-center">
+            <ModeToggle />
+          </div>
         </nav>
         <main>{children}</main>
         <TanStackDevtools
@@ -94,6 +99,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           ]}
         />
         <Scripts />
+        </ThemeProvider>
       </body>
     </html>
   )
