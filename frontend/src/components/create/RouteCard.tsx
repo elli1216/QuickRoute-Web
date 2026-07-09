@@ -16,6 +16,7 @@ import { formatJson } from '#/lib/json'
 import { FieldBuilder } from '#/components/field-builder'
 import { METHODS, STATUSES } from '#/lib/create'
 import { useCreateStore } from '#/stores/useCreateStore'
+import { CodeWindow } from '#/components/ui/code-window'
 
 interface RouteCardProps {
   i: number
@@ -244,15 +245,9 @@ export function RouteCard({ i }: RouteCardProps) {
                   >
                     Preview JSON
                   </summary>
-                  <pre
-                    className="mt-1 p-3 rounded-xl text-xs overflow-x-auto max-w-full"
-                    style={{
-                      background: '#1d2e45',
-                      color: '#e8efff',
-                    }}
-                  >
-                    <code>{route.body}</code>
-                  </pre>
+                  <CodeWindow className="mt-2" title="Preview">
+                    <pre><code>{route.body}</code></pre>
+                  </CodeWindow>
                 </details>
               )}
             </>

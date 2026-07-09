@@ -4,6 +4,7 @@ import { Button } from '#/components/ui/button'
 import { toast } from 'sonner'
 import { buildEndpointUrl, buildCurl } from '#/lib/api'
 import { useCreateStore } from '#/stores/useCreateStore'
+import { CodeWindow } from '#/components/ui/code-window'
 
 export function MockResult() {
   const result = useCreateStore(state => state.result)
@@ -133,13 +134,9 @@ export function MockResult() {
                 )
                 const curl = buildCurl(r.method, url)
                 return (
-                  <pre
-                    key={i}
-                    className="p-3 rounded-xl text-xs overflow-x-auto"
-                    style={{ background: '#1d2e45', color: '#e8efff' }}
-                  >
-                    <code>{curl}</code>
-                  </pre>
+                  <CodeWindow key={i}>
+                    <pre><code>{curl}</code></pre>
+                  </CodeWindow>
                 )
               })}
             </div>

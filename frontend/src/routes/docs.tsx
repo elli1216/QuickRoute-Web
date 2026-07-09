@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
+import { CodeWindow } from '#/components/ui/code-window'
 
 export const Route = createFileRoute('/docs')({
   component: DocsPage,
@@ -168,10 +169,10 @@ function DocsPage() {
               <p className="text-sm leading-relaxed mb-3" style={{ color: 'var(--sea-ink-soft)' }}>
                 You can secure your mock endpoints by requiring an API Key or a Bearer Token.
               </p>
-              <pre className="p-3 rounded-lg text-xs bg-[#1d2e45] text-[#e8efff] overflow-x-auto">
-                <code>{`curl -H "Authorization: Bearer secret123" \\
-  https://.../mock/abc/users`}</code>
-              </pre>
+              <CodeWindow title="Terminal">
+                <pre><code>{`curl -H "Authorization: Bearer secret123" \\
+  https://.../mock/abc/users`}</code></pre>
+              </CodeWindow>
             </CardContent>
           </Card>
 
@@ -183,13 +184,13 @@ function DocsPage() {
               <p className="text-sm leading-relaxed mb-3" style={{ color: 'var(--sea-ink-soft)' }}>
                 Define a route like <code>/users/:id</code>, and include <code>:id</code> in your response body. The server will dynamically replace it with whatever was in the URL.
               </p>
-              <pre className="p-3 rounded-lg text-xs bg-[#1d2e45] text-[#e8efff] overflow-x-auto">
-                <code>{`// GET /users/99
+              <CodeWindow title="JSON Response">
+                <pre><code>{`// GET /users/99
 {
   "id": "99",
   "name": "{{name.firstName}}"
-}`}</code>
-              </pre>
+}`}</code></pre>
+              </CodeWindow>
             </CardContent>
           </Card>
         </div>
