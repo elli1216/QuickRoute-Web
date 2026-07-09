@@ -5,6 +5,8 @@ public class RouteConfigDto {
     private Integer status;
     private Integer delay;
     private Object body;
+    private String authType;
+    private String expectedToken;
 
     public RouteConfigDto() {
     }
@@ -37,5 +39,21 @@ public class RouteConfigDto {
 
     public void setBody(Object body) {
         this.body = body;
+    }
+
+    public String getAuthType() {
+        return authType;
+    }
+
+    public void setAuthType(String authType) {
+        this.authType = authType;
+    }
+
+    public String getExpectedToken() {
+        return expectedToken;
+    }
+
+    public void setExpectedToken(String expectedToken) {
+        this.expectedToken = expectedToken;
     }
 }

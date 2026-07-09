@@ -6,12 +6,16 @@ export interface RouteFormInput {
   status: number
   delay: number
   body: string
+  authType: string
+  expectedToken: string
 }
 
 interface RouteConfigDto {
   status?: number
   delay?: number
   body: unknown
+  authType?: string
+  expectedToken?: string
 }
 
 export interface MockUploadResult {
@@ -63,6 +67,8 @@ export async function uploadMock(
       status: route.status,
       delay: route.delay,
       body: parsedBody,
+      authType: route.authType === 'NONE' ? undefined : route.authType,
+      expectedToken: route.expectedToken,
     }
   }
 

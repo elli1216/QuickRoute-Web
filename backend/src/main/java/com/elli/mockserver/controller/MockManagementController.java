@@ -115,6 +115,15 @@ public class MockManagementController {
             }
             route.setResponseBody(config.getBody());
 
+            if (config.getAuthType() != null) {
+                try {
+                    route.setAuthType(com.elli.mockserver.model.AuthType.valueOf(config.getAuthType().toUpperCase()));
+                } catch (IllegalArgumentException e) {
+                    route.setAuthType(com.elli.mockserver.model.AuthType.NONE);
+                }
+            }
+            route.setExpectedToken(config.getExpectedToken());
+
             routes.add(route);
         }
         return routes;

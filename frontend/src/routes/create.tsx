@@ -29,6 +29,8 @@ const emptyRoute = (): RouteFormInput => ({
   status: 200,
   delay: 0,
   body: '',
+  authType: 'NONE',
+  expectedToken: '',
 })
 
 function saveMockId(id: string) {
@@ -391,6 +393,35 @@ function CreateMock() {
                       }
                     />
                   </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label>Authentication</Label>
+                    <Select
+                      value={route.authType}
+                      onValueChange={(v) => updateRoute(i, 'authType', v)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="NONE">None</SelectItem>
+                        <SelectItem value="BEARER">Bearer Token</SelectItem>
+                        <SelectItem value="API_KEY">API Key Header</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {route.authType !== 'NONE' && (
+                    <div className="space-y-1.5">
+                      <Label>Expected Token / Key</Label>
+                      <Input
+                        placeholder="secret-token-123"
+                        value={route.expectedToken}
+                        onChange={(e) => updateRoute(i, 'expectedToken', e.target.value)}
+                      />
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-1.5">

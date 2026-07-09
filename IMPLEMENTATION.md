@@ -10,19 +10,19 @@ The plan is structured to introduce incremental complexity, allowing for stable 
 *Allows users to secure their mock endpoints by requiring specific Bearer tokens or headers.*
 
 ### 1.1 Backend Updates (`backend/`)
-- [ ] **Database Schema**: Update the `Route` entity to include:
+- [x] **Database Schema**: Update the `Route` entity to include:
   - `authType` (Enum: `NONE`, `BEARER`, `API_KEY`)
   - `expectedToken` (String, nullable)
-- [ ] **Request Interceptor**: Modify the mock request handling logic. Before returning the mocked response, check if the `Route` requires authentication.
+- [x] **Request Interceptor**: Modify the mock request handling logic. Before returning the mocked response, check if the `Route` requires authentication.
   - If `BEARER`: Check the `Authorization: Bearer <token>` header.
   - If `API_KEY`: Check the configured custom header (e.g., `X-API-Key`).
   - If the token is missing or incorrect, immediately return a `401 Unauthorized` JSON response.
 
 ### 1.2 Frontend Updates (`frontend/`)
-- [ ] **Route Builder UI**: Add an "Authentication" section in the visual builder for each route.
+- [x] **Route Builder UI**: Add an "Authentication" section in the visual builder for each route.
   - Dropdown to select Auth Type (None, Bearer Token, Custom Header).
   - Input field to specify the expected token/value.
-- [ ] **API Payload**: Ensure the new fields are serialized and sent to the backend during the mock creation API call.
+- [x] **API Payload**: Ensure the new fields are serialized and sent to the backend during the mock creation API call.
 
 ---
 

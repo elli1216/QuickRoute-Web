@@ -34,6 +34,31 @@ public class MockRequestHandler {
             Thread.sleep(route.getDelayMs());
         }
 
+        if (route.getAuthType() != null && route.getAuthType() != com.elli.mockserver.model.AuthType.NONE) {
+            boolean authorized = false;
+            if (route.getAuthType() == com.elli.mockserver.model.AuthType.BEARER) {
+                String authHeader = request.getHeader("Authorization");
+                if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                    String token = authHeader.substring(7);
+                    if (token.equals(route.getExpectedToken())) {
+                        authorized = true;
+                    }
+                }
+            } else if (route.getAuthType() == com.elli.mockserver.model.AuthType.API_KEY) {
+                String apiKey = request.getHeader("X-API-Key");
+                if (apiKey != null && apiKey.equals(route.getExpectedToken())) {
+                    authorized = true;
+                }
+            }
+
+            if (!authorized) {
+                response.setStatus(401);
+                response.setContentType("application/json");
+                objectMapper.writeValue(response.getWriter(), Map.of("error", "Unauthorized", "message", "Missing or invalid authentication token."));
+                return;
+            }
+        }
+
         Map<String, String> pathVars = registry.extractPathVariables(requestUri, route.getPathPattern());
         Object finalBody = substitutePathVars(route.getResponseBody(), pathVars);
 

@@ -36,6 +36,11 @@ public class RouteDefinition {
 
     private int statusCode;
 
+    @jakarta.persistence.Enumerated(jakarta.persistence.EnumType.STRING)
+    private AuthType authType = AuthType.NONE;
+
+    private String expectedToken;
+
     public RouteDefinition() {
         this.delayMs = 0;
         this.statusCode = 200;
@@ -103,5 +108,21 @@ public class RouteDefinition {
 
     public void setStatusCode(int statusCode) {
         this.statusCode = statusCode;
+    }
+
+    public AuthType getAuthType() {
+        return authType;
+    }
+
+    public void setAuthType(AuthType authType) {
+        this.authType = authType;
+    }
+
+    public String getExpectedToken() {
+        return expectedToken;
+    }
+
+    public void setExpectedToken(String expectedToken) {
+        this.expectedToken = expectedToken;
     }
 }
