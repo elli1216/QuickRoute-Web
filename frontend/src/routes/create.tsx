@@ -359,7 +359,7 @@ function CreateMock() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-3 gap-3">
                   <div className="space-y-1.5">
                     <Label>Status</Label>
                     <Select
@@ -393,16 +393,13 @@ function CreateMock() {
                       }
                     />
                   </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
                     <Label>Authentication</Label>
                     <Select
                       value={route.authType}
                       onValueChange={(v) => updateRoute(i, 'authType', v)}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className='w-full'>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -412,6 +409,10 @@ function CreateMock() {
                       </SelectContent>
                     </Select>
                   </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+
                   {route.authType !== 'NONE' && (
                     <div className="space-y-1.5">
                       <Label>Expected Token / Key</Label>

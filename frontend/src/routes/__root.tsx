@@ -54,51 +54,58 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           <nav
             className="page-wrap flex items-center gap-4 md:gap-6 py-3 md:py-4 px-6 md:px-8 sticky top-4 z-50 island-shell mt-4"
           >
-          <Link
-            to="/"
-            className="nav-link flex items-center gap-2"
-            activeProps={{
-              className: 'nav-link is-active flex items-center gap-2',
+            <Link
+              to="/"
+              className="nav-link flex items-center gap-2"
+              activeProps={{
+                className: 'nav-link is-active flex items-center gap-2',
+              }}
+            >
+              <img
+                src="/main-logo.svg"
+                alt="QuickRoute"
+                className="size-10 w-auto"
+              />
+            </Link>
+            <Link
+              to="/docs"
+              className="nav-link"
+              activeProps={{ className: 'nav-link is-active' }}
+            >
+              Docs
+            </Link>
+            <Link
+              to="/create"
+              className="nav-link"
+              activeProps={{ className: 'nav-link is-active' }}
+            >
+              Create
+            </Link>
+            <Link
+              to="/mocks"
+              className="nav-link"
+              activeProps={{ className: 'nav-link is-active' }}
+            >
+              Mocks
+            </Link>
+            <div className="ml-auto flex items-center">
+              <ModeToggle />
+            </div>
+          </nav>
+          <main>{children}</main>
+          <TanStackDevtools
+            config={{
+              position: 'bottom-right',
             }}
-          >
-            <img
-              src="/main-logo.svg"
-              alt="QuickRoute"
-              className="size-10 w-auto"
-            />
-          </Link>
-          <Link
-            to="/create"
-            className="nav-link"
-            activeProps={{ className: 'nav-link is-active' }}
-          >
-            Create Mock
-          </Link>
-          <Link
-            to="/mocks"
-            className="nav-link"
-            activeProps={{ className: 'nav-link is-active' }}
-          >
-            My Mocks
-          </Link>
-          <div className="ml-auto flex items-center">
-            <ModeToggle />
-          </div>
-        </nav>
-        <main>{children}</main>
-        <TanStackDevtools
-          config={{
-            position: 'bottom-right',
-          }}
-          plugins={[
-            {
-              name: 'Tanstack Router',
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-            TanStackQueryDevtools,
-          ]}
-        />
-        <Scripts />
+            plugins={[
+              {
+                name: 'Tanstack Router',
+                render: <TanStackRouterDevtoolsPanel />,
+              },
+              TanStackQueryDevtools,
+            ]}
+          />
+          <Scripts />
         </ThemeProvider>
       </body>
     </html>

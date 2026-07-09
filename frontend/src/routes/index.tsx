@@ -32,12 +32,12 @@ function Home() {
             >
               Start Mocking &rarr;
             </Link>
-            <a
-              href="#how-it-works"
+            <Link
+              to="/docs"
               className="inline-block px-8 py-3.5 rounded-xl font-semibold text-lg island-shell"
             >
-              How it works
-            </a>
+              Documentation
+            </Link>
           </div>
         </div>
       </section>

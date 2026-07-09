@@ -10,12 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as MocksRouteImport } from './routes/mocks'
+import { Route as DocsRouteImport } from './routes/docs'
 import { Route as CreateRouteImport } from './routes/create'
 import { Route as IndexRouteImport } from './routes/index'
 
 const MocksRoute = MocksRouteImport.update({
   id: '/mocks',
   path: '/mocks',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsRoute = DocsRouteImport.update({
+  id: '/docs',
+  path: '/docs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CreateRoute = CreateRouteImport.update({
@@ -32,30 +38,34 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/create': typeof CreateRoute
+  '/docs': typeof DocsRoute
   '/mocks': typeof MocksRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/create': typeof CreateRoute
+  '/docs': typeof DocsRoute
   '/mocks': typeof MocksRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/create': typeof CreateRoute
+  '/docs': typeof DocsRoute
   '/mocks': typeof MocksRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/create' | '/mocks'
+  fullPaths: '/' | '/create' | '/docs' | '/mocks'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/create' | '/mocks'
-  id: '__root__' | '/' | '/create' | '/mocks'
+  to: '/' | '/create' | '/docs' | '/mocks'
+  id: '__root__' | '/' | '/create' | '/docs' | '/mocks'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CreateRoute: typeof CreateRoute
+  DocsRoute: typeof DocsRoute
   MocksRoute: typeof MocksRoute
 }
 
@@ -66,6 +76,13 @@ declare module '@tanstack/react-router' {
       path: '/mocks'
       fullPath: '/mocks'
       preLoaderRoute: typeof MocksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs': {
+      id: '/docs'
+      path: '/docs'
+      fullPath: '/docs'
+      preLoaderRoute: typeof DocsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/create': {
@@ -88,6 +105,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CreateRoute: CreateRoute,
+  DocsRoute: DocsRoute,
   MocksRoute: MocksRoute,
 }
 export const routeTree = rootRouteImport

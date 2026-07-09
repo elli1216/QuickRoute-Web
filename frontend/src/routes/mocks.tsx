@@ -1,12 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useEffect } from 'react'
 import { Button } from '#/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
 import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
-import { Toaster, toast } from 'sonner'
-import { getMock, deleteMock, buildEndpointUrl } from '#/lib/api'
-import type { MockSummary } from '#/lib/api'
+import { Toaster } from 'sonner'
+import { useMocksStore } from '#/stores/useMocksStore'
+import { MockCard } from '#/components/mock-card'
 
 export const Route = createFileRoute('/mocks')({ component: MyMocks })
 
@@ -18,49 +18,24 @@ function loadSavedMockIds(): string[] {
   }
 }
 
-function removeSavedId(id: string) {
-  const ids = loadSavedMockIds().filter((x) => x !== id)
-  localStorage.setItem('quickroute-mock-ids', JSON.stringify(ids))
-}
-
 function MyMocks() {
-  const [lookupId, setLookupId] = useState('')
-  const [mock, setMock] = useState<MockSummary | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [deleting, setDeleting] = useState(false)
+  const lookupId = useMocksStore(state => state.lookupId);
+  const mock = useMocksStore(state => state.mock);
+  const loading = useMocksStore(state => state.loading);
+  const deletingId = useMocksStore(state => state.deletingId);
+  const allMocks = useMocksStore(state => state.allMocks);
+  const allMocksLoading = useMocksStore(state => state.allMocksLoading);
+  const allMocksError = useMocksStore(state => state.allMocksError);
+  const setLookupId = useMocksStore(state => state.setLookupId);
+  const handleLookup = useMocksStore(state => state.handleLookup);
+  const handleDelete = useMocksStore(state => state.handleDelete);
+  const fetchAllMocks = useMocksStore(state => state.fetchAllMocks);
+
   const savedIds = loadSavedMockIds()
 
-  const handleLookup = async (id: string) => {
-    const trimmed = id.trim()
-    if (!trimmed) return
-
-    setLoading(true)
-    setMock(null)
-    try {
-      const result = await getMock(trimmed)
-      setMock(result)
-    } catch {
-      toast.error('Mock not found')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleDelete = async () => {
-    if (!mock) return
-    setDeleting(true)
-    try {
-      await deleteMock(mock.mockId)
-      removeSavedId(mock.mockId)
-      toast.success('Mock deleted')
-      setMock(null)
-      setLookupId('')
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Delete failed')
-    } finally {
-      setDeleting(false)
-    }
-  }
+  useEffect(() => {
+    fetchAllMocks()
+  }, [fetchAllMocks])
 
   return (
     <div className="page-wrap py-8 md:py-12 px-4 md:px-0">
@@ -72,8 +47,8 @@ function MyMocks() {
         </div>
 
         <div className="w-full space-y-4 mb-6 md:mb-8">
-          <div className="flex items-center justify-center gap-4">
-            <Card className='w-full max-w-3xl'>
+          <div className="flex flex-col items-center justify-center gap-4">
+            <Card className='w-full max-w-3xl card-glass'>
               <CardHeader>
                 <CardTitle className="text-base">Look up a Mock</CardTitle>
               </CardHeader>
@@ -91,7 +66,7 @@ function MyMocks() {
                 </div>
                 <Button
                   variant="default"
-                  className="w-full"
+                  className="w-full glow-button"
                   disabled={!lookupId.trim() || loading}
                   onClick={() => handleLookup(lookupId)}
                 >
@@ -101,7 +76,7 @@ function MyMocks() {
             </Card>
 
             {savedIds.length > 0 && (
-              <Card>
+              <Card className="w-full max-w-3xl card-glass">
                 <CardHeader>
                   <CardTitle className="text-base">Recent Mock IDs</CardTitle>
                 </CardHeader>
@@ -111,7 +86,7 @@ function MyMocks() {
                       key={id}
                       variant="outline"
                       size="sm"
-                      className="font-mono text-xs"
+                      className="font-mono text-xs hover:bg-(--surface-strong)"
                       onClick={() => {
                         setLookupId(id)
                         handleLookup(id)
@@ -126,105 +101,50 @@ function MyMocks() {
           </div>
 
           {mock && (
-            <Card>
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <CardTitle className="text-sm font-mono break-all">
-                      {mock.mockId}
-                    </CardTitle>
-                    <p
-                      className="text-xs mt-1"
-                      style={{ color: 'var(--sea-ink-soft)' }}
-                    >
-                      {mock.routeCount} route{mock.routeCount !== 1 ? 's' : ''}{' '}
-                      &bull; Created {new Date(mock.createdAt).toLocaleString()}
-                      <br />
-                      Expires {new Date(mock.expiresAt).toLocaleString()}
-                    </p>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleDelete}
-                    disabled={deleting}
-                    style={{ color: '#ef4444', borderColor: '#fecaca' }}
-                  >
-                    {deleting ? 'Deleting...' : 'Delete'}
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-1.5">
-                  {mock.routes.map((route, j) => {
-                    const url = buildEndpointUrl(
-                      mock.mockId,
-                      route.pathPattern.startsWith('/')
-                        ? route.pathPattern
-                        : `/${route.pathPattern}`,
-                    )
-                    return (
-                      <div
-                        key={j}
-                        className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-sm py-2 sm:py-1"
-                      >
-                        <div className="flex items-center gap-2">
-                          <span
-                            className="px-1.5 py-0.5 rounded text-xs font-bold shrink-0"
-                            style={{
-                              background:
-                                route.method === 'GET'
-                                  ? '#dbeafe'
-                                  : route.method === 'POST'
-                                    ? '#dcfce7'
-                                    : route.method === 'DELETE'
-                                      ? '#fee2e2'
-                                      : route.method === 'PUT'
-                                        ? '#fef3c7'
-                                        : '#f3e8ff',
-                              color:
-                                route.method === 'GET'
-                                  ? '#1e40af'
-                                  : route.method === 'POST'
-                                    ? '#166534'
-                                    : route.method === 'DELETE'
-                                      ? '#991b1b'
-                                      : route.method === 'PUT'
-                                        ? '#92400e'
-                                        : '#6b21a8',
-                            }}
-                          >
-                            {route.method}
-                          </span>
-                          <code className="flex-1 truncate text-xs sm:text-sm">
-                            {route.pathPattern}
-                          </code>
-                          <span
-                            className="shrink-0 text-xs"
-                            style={{ color: 'var(--sea-ink-soft)' }}
-                          >
-                            {route.statusCode}
-                            {route.delayMs > 0 ? ` / ${route.delayMs}ms` : ''}
-                          </span>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="shrink-0 text-xs w-full sm:w-auto"
-                          onClick={() => {
-                            navigator.clipboard.writeText(url)
-                            toast.success('URL copied!')
-                          }}
-                        >
-                          Copy URL
-                        </Button>
-                      </div>
-                    )
-                  })}
-                </div>
-              </CardContent>
-            </Card>
+            <div className="w-full max-w-3xl mx-auto space-y-3 mt-8">
+              <h2 className="text-lg font-semibold border-b border-(--line) pb-2">Search Result</h2>
+              <MockCard mock={mock} onDelete={handleDelete} isDeleting={deletingId === mock.mockId} />
+            </div>
           )}
+
+          <div className="w-full max-w-5xl mx-auto space-y-4 mt-12">
+            <h2 className="text-xl font-bold border-b border-(--line) pb-2">All Available Mocks</h2>
+
+            {allMocksLoading ? (
+              <div className="text-center py-12 text-sm" style={{ color: 'var(--sea-ink-soft)' }}>
+                Loading available mocks...
+              </div>
+            ) : allMocksError ? (
+              <Card className="card-glass bg-red-500/10 border-red-500/20">
+                <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+                  <p className="text-red-400 font-semibold mb-2">Error loading mocks</p>
+                  <p className="text-sm" style={{ color: 'var(--sea-ink-soft)' }}>{allMocksError}</p>
+                  <Button variant="outline" className="mt-4" onClick={fetchAllMocks}>Try Again</Button>
+                </CardContent>
+              </Card>
+            ) : allMocks.length === 0 ? (
+              <Card className="card-glass border-dashed border-2 border-(--line) shadow-none bg-transparent">
+                <CardContent className="flex flex-col items-center justify-center py-16 text-center">
+                  <div className="w-12 h-12 rounded-full bg-(--surface-strong) flex items-center justify-center mb-4">
+                    <span className="text-2xl opacity-50">📂</span>
+                  </div>
+                  <h3 className="text-lg font-semibold mb-1">No Mocks Found</h3>
+                  <p className="text-sm mb-4 max-w-sm" style={{ color: 'var(--sea-ink-soft)' }}>
+                    You haven't created any mocks yet, or all your mocks have expired.
+                  </p>
+                  <Button variant="default" className="glow-button" onClick={() => window.location.href = '/create'}>
+                    Create Your First Mock
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
+                {allMocks.map(m => (
+                  <MockCard key={m.mockId} mock={m} onDelete={handleDelete} isDeleting={deletingId === m.mockId} />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
       <Toaster />
