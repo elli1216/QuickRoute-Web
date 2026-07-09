@@ -337,7 +337,7 @@ function CreateMock() {
                       value={route.method}
                       onValueChange={(v) => updateRoute(i, 'method', v)}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className='w-full'>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
