@@ -14,9 +14,12 @@ import java.util.Map;
 public class MockRequestHandler {
 
     private final MockRegistryService registry;
+    private final com.elli.mockserver.service.TemplateResolutionService templateService;
 
-    public MockRequestHandler(MockRegistryService registry) {
+    public MockRequestHandler(MockRegistryService registry,
+            com.elli.mockserver.service.TemplateResolutionService templateService) {
         this.registry = registry;
+        this.templateService = templateService;
     }
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -54,13 +57,15 @@ public class MockRequestHandler {
             if (!authorized) {
                 response.setStatus(401);
                 response.setContentType("application/json");
-                objectMapper.writeValue(response.getWriter(), Map.of("error", "Unauthorized", "message", "Missing or invalid authentication token."));
+                objectMapper.writeValue(response.getWriter(),
+                        Map.of("error", "Unauthorized", "message", "Missing or invalid authentication token."));
                 return;
             }
         }
 
         Map<String, String> pathVars = registry.extractPathVariables(requestUri, route.getPathPattern());
         Object finalBody = substitutePathVars(route.getResponseBody(), pathVars);
+        finalBody = templateService.resolveTemplates(finalBody);
 
         response.setStatus(route.getStatusCode());
         response.setContentType("application/json");

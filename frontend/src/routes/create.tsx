@@ -495,6 +495,15 @@ function CreateMock() {
                         quickly create several copies with auto-generated faker
                         data.
                       </div>
+                      <div
+                        className="text-xs leading-relaxed p-3 rounded-lg mt-2"
+                        style={{
+                          background: 'color-mix(in srgb, var(--lagoon) 10%, transparent)',
+                          color: 'var(--sea-ink-soft)',
+                        }}
+                      >
+                        <strong className="font-semibold">Faker Variables:</strong> You can use templates like <code>{`{{name.firstName}}`}</code>, <code>{`{{internet.email}}`}</code>, <code>{`{{internet.uuid}}`}</code> in string values to generate dynamic data on every request!
+                      </div>
                       {route.body.trim() && (
                         <details className="mt-2">
                           <summary
@@ -547,6 +556,15 @@ function CreateMock() {
                         >
                           Format
                         </Button>
+                      </div>
+                      <div
+                        className="text-xs leading-relaxed p-3 rounded-lg mt-2"
+                        style={{
+                          background: 'color-mix(in srgb, var(--lagoon) 10%, transparent)',
+                          color: 'var(--sea-ink-soft)',
+                        }}
+                      >
+                        <strong className="font-semibold">Faker Variables:</strong> You can use templates like <code>{`{{name.firstName}}`}</code>, <code>{`{{internet.email}}`}</code>, <code>{`{{internet.uuid}}`}</code> in string values to generate dynamic data on every request!
                       </div>
                     </div>
                   )}

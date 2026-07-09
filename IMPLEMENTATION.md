@@ -31,13 +31,13 @@ The plan is structured to introduce incremental complexity, allowing for stable 
 
 ### 2.1 Backend Updates (`backend/`)
 *Since the backend serves the mock, the dynamic resolution must happen in Java.*
-- [ ] **Dependencies**: Add a Java-based faker library like `datafaker` (`net.datafaker:datafaker`) to `pom.xml`.
-- [ ] **Response Parser**: Create a `TemplateResolutionService`. 
+- [x] **Dependencies**: Add a Java-based faker library like `datafaker` (`net.datafaker:datafaker`) to `pom.xml`.
+- [x] **Response Parser**: Create a `TemplateResolutionService`. 
   - When the backend retrieves the response body from the DB, it scans for mustache-like syntax (e.g., `{{name.firstName}}`, `{{internet.email}}`, `{{id.uuid}}`).
   - Replace these placeholders with dynamically generated data using Datafaker before sending the HTTP response.
 
 ### 2.2 Frontend Updates (`frontend/`)
-- [ ] **JSON Editor Enhancements**: 
+- [x] **JSON Editor Enhancements**: 
   - Add helper text or a floating panel in the response body editor listing popular Faker variables.
   - Optional: Use `@faker-js/faker` on the frontend purely for providing "Preview" functionality in the builder so users can see what the generated payload will look like.
 
