@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
 import { CodeWindow } from '#/components/ui/code-window'
+import { ScreenWindow } from '#/components/ui/screen-window'
 
 export const Route = createFileRoute('/docs')({
   component: DocsPage,
@@ -80,46 +81,55 @@ function DocsPage() {
         <h2 className="text-2xl font-bold border-b border-(--line) pb-2">
           Tutorial: How to Mock Your First API
         </h2>
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="space-y-10">
           <Card className="card-glass">
             <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-(--lagoon) text-white flex items-center justify-center text-sm">1</span>
+              <CardTitle className="text-xl flex items-center gap-3">
+                <span className="w-8 h-8 rounded-full bg-(--lagoon) text-white flex items-center justify-center text-base shadow-lg shadow-blue-500/20">1</span>
                 Define Route
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="text-sm leading-relaxed" style={{ color: 'var(--sea-ink-soft)' }}>
+            <CardContent className="space-y-6">
+              <p className="text-base leading-relaxed" style={{ color: 'var(--sea-ink-soft)' }}>
                 Head over to the <strong>Create Mock</strong> page. Select your HTTP method (e.g., <code>GET</code>, <code>POST</code>) and define the path (e.g., <code>/api/users</code>). You can also use path variables like <code>/api/users/:id</code>.
               </p>
+              <ScreenWindow title="quickroute.dev/create">
+                <img src="/steps/step1.png" alt="Step 1: Define Route" className="w-full h-auto object-cover" />
+              </ScreenWindow>
             </CardContent>
           </Card>
 
           <Card className="card-glass">
             <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-(--lagoon) text-white flex items-center justify-center text-sm">2</span>
+              <CardTitle className="text-xl flex items-center gap-3">
+                <span className="w-8 h-8 rounded-full bg-(--lagoon) text-white flex items-center justify-center text-base shadow-lg shadow-blue-500/20">2</span>
                 Set Response
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="text-sm leading-relaxed" style={{ color: 'var(--sea-ink-soft)' }}>
+            <CardContent className="space-y-6">
+              <p className="text-base leading-relaxed" style={{ color: 'var(--sea-ink-soft)' }}>
                 Choose a status code and an optional delay (great for testing loading states). Then, use the Visual Field Builder or Raw JSON editor to craft exactly what the API should return.
               </p>
+              <ScreenWindow title="quickroute.dev/create">
+                <img src="/steps/step2.png" alt="Step 2: Set Response" className="w-full h-auto object-cover" />
+              </ScreenWindow>
             </CardContent>
           </Card>
 
           <Card className="card-glass">
             <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-(--lagoon) text-white flex items-center justify-center text-sm">3</span>
+              <CardTitle className="text-xl flex items-center gap-3">
+                <span className="w-8 h-8 rounded-full bg-(--lagoon) text-white flex items-center justify-center text-base shadow-lg shadow-blue-500/20">3</span>
                 Call It!
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="text-sm leading-relaxed" style={{ color: 'var(--sea-ink-soft)' }}>
+            <CardContent className="space-y-6">
+              <p className="text-base leading-relaxed" style={{ color: 'var(--sea-ink-soft)' }}>
                 Hit <strong>Create Mock</strong>. You will receive a unique Mock ID and a base URL. Simply point your frontend application or curl commands to that URL, and you're done!
               </p>
+              <ScreenWindow title="quickroute.dev/create">
+                <img src="/steps/step3.png" alt="Step 3: Call It!" className="w-full h-auto object-cover" />
+              </ScreenWindow>
             </CardContent>
           </Card>
         </div>
