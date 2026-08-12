@@ -101,6 +101,11 @@ public class MockManagementController {
 
             String method = parts[0].toUpperCase();
             String path = parts[1];
+            
+            if (path.length() > 255) {
+                throw new MockUploadException("Path pattern too long (max 255 characters): " + path);
+            }
+            
             RouteConfigDto config = entry.getValue();
 
             RouteDefinition route = new RouteDefinition();

@@ -4,33 +4,40 @@ import com.elli.mockserver.model.MockConfiguration;
 import com.elli.mockserver.model.RouteDefinition;
 import com.elli.mockserver.repository.MockConfigurationRepository;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
 public class MockRegistryService {
 
     private final MockConfigurationRepository mockRepo;
-
     private final DynamicRouteRegistrar routeRegistrar;
+    private final RouteMatcherService routeMatcherService;
+    private final CacheManager cacheManager;
 
-    public MockRegistryService(MockConfigurationRepository mockRepo, @Lazy DynamicRouteRegistrar routeRegistrar) {
+    public MockRegistryService(MockConfigurationRepository mockRepo,
+            @Lazy DynamicRouteRegistrar routeRegistrar,
+            RouteMatcherService routeMatcherService,
+            CacheManager cacheManager) {
         this.mockRepo = mockRepo;
         this.routeRegistrar = routeRegistrar;
+        this.routeMatcherService = routeMatcherService;
+        this.cacheManager = cacheManager;
     }
 
     @Transactional
@@ -44,31 +51,35 @@ public class MockRegistryService {
     }
 
     @Transactional
+    @CacheEvict(value = "mocks", key = "#mockId")
     public void removeMock(String mockId) {
         mockRepo.deleteById(mockId);
     }
 
     @Transactional(readOnly = true)
     public List<RouteDefinition> getRoutes(String mockId) {
-        return mockRepo.findById(mockId)
-                .map(MockConfiguration::getRoutes)
-                .orElse(List.of());
+        MockConfiguration mock = getMock(mockId);
+        if (mock != null) {
+            return mock.getRoutes();
+        }
+        return List.of();
     }
 
     @Transactional(readOnly = true)
     public RouteDefinition findRoute(String requestUri, String method) {
-        String mockId = extractMockId(requestUri);
+        String mockId = routeMatcherService.extractMockId(requestUri);
         if (mockId == null)
             return null;
 
-        Optional<MockConfiguration> opt = mockRepo.findById(mockId);
-        if (opt.isEmpty())
+        MockConfiguration mock = getMock(mockId);
+        if (mock == null)
             return null;
 
-        String relativePath = extractRelativePath(requestUri, mockId);
+        String relativePath = routeMatcherService.extractRelativePath(requestUri, mockId);
 
-        for (RouteDefinition route : opt.get().getRoutes()) {
-            if (route.getMethod().equalsIgnoreCase(method) && matchesPath(route.getPathPattern(), relativePath)) {
+        for (RouteDefinition route : mock.getRoutes()) {
+            if (route.getMethod().equalsIgnoreCase(method) &&
+                    routeMatcherService.matchesPath(route.getPathPattern(), relativePath)) {
                 return route;
             }
         }
@@ -77,25 +88,16 @@ public class MockRegistryService {
 
     @Transactional(readOnly = true)
     public Map<String, String> extractPathVariables(String requestUri, String pathPattern) {
-        Map<String, String> vars = new LinkedHashMap<>();
-        String mockId = extractMockId(requestUri);
+        String mockId = routeMatcherService.extractMockId(requestUri);
         if (mockId == null)
-            return vars;
+            return Map.of();
 
-        String relativePath = extractRelativePath(requestUri, mockId);
-        Pattern pattern = buildPattern(pathPattern);
-        Matcher matcher = pattern.matcher(relativePath);
-
-        if (matcher.matches()) {
-            List<String> varNames = extractVarNames(pathPattern);
-            for (int i = 0; i < varNames.size(); i++) {
-                vars.put(varNames.get(i), matcher.group(i + 1));
-            }
-        }
-        return vars;
+        String relativePath = routeMatcherService.extractRelativePath(requestUri, mockId);
+        return routeMatcherService.extractPathVariables(relativePath, pathPattern);
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "mocks", key = "#mockId")
     public MockConfiguration getMock(String mockId) {
         return mockRepo.findById(mockId).orElse(null);
     }
@@ -110,13 +112,25 @@ public class MockRegistryService {
     @Scheduled(cron = "0 0 */6 * * *")
     @Transactional
     public void cleanupExpiredMocks() {
-        List<MockConfiguration> expired = mockRepo.findByExpiresAtBefore(LocalDateTime.now());
-        for (MockConfiguration mock : expired) {
-            for (RouteDefinition route : mock.getRoutes()) {
-                routeRegistrar.unregisterRoute(mock.getId(), route);
+        int pageSize = 100;
+        Pageable pageable = PageRequest.of(0, pageSize);
+        Page<MockConfiguration> page;
+
+        do {
+            page = mockRepo.findByExpiresAtBefore(LocalDateTime.now(), pageable);
+            for (MockConfiguration mock : page.getContent()) {
+                for (RouteDefinition route : mock.getRoutes()) {
+                    routeRegistrar.unregisterRoute(mock.getId(), route);
+                }
+
+                var cache = cacheManager.getCache("mocks");
+                if (cache != null) {
+                    cache.evict(mock.getId());
+                }
+
+                mockRepo.delete(mock);
             }
-            mockRepo.delete(mock);
-        }
+        } while (page.hasNext());
     }
 
     @EventListener(ApplicationReadyEvent.class)
@@ -128,38 +142,5 @@ public class MockRegistryService {
                 routeRegistrar.registerRoute(mock.getId(), route);
             }
         }
-    }
-
-    private String extractMockId(String uri) {
-        String[] parts = uri.replaceFirst("^/", "").split("/");
-        if (parts.length > 1 && "mock".equals(parts[0])) {
-            return parts[1];
-        }
-        return null;
-    }
-
-    private String extractRelativePath(String uri, String mockId) {
-        String prefix = "/mock/" + mockId;
-        String relative = uri.substring(prefix.length());
-        return relative.isEmpty() ? "/" : relative;
-    }
-
-    private boolean matchesPath(String pattern, String requestPath) {
-        return buildPattern(pattern).matcher(requestPath).matches();
-    }
-
-    private Pattern buildPattern(String pathPattern) {
-        String regex = Arrays.stream(pathPattern.split("/"))
-                .map(segment -> segment.startsWith(":") ? "([^/]+)" : Pattern.quote(segment))
-                .reduce((a, b) -> a + "/" + b)
-                .orElse("");
-        return Pattern.compile("^" + regex + "$");
-    }
-
-    private List<String> extractVarNames(String pathPattern) {
-        return Arrays.stream(pathPattern.split("/"))
-                .filter(segment -> segment.startsWith(":"))
-                .map(segment -> segment.substring(1))
-                .toList();
     }
 }
