@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { features, steps } from '#/lib/landing'
 import { CodeWindow } from '#/components/ui/code-window'
+import { StatsChart } from '#/components/ui/stats-chart'
 
 export const Route = createFileRoute('/')({ component: Home })
 
@@ -43,6 +44,9 @@ function Home() {
           </div>
         </div>
       </section>
+
+      {/* Real-time Statistics */}
+      <StatsChart />
 
       {/* How it works */}
       <section id="how-it-works" className="page-wrap py-16 md:py-24 relative z-10">

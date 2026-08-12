@@ -15,11 +15,14 @@ public class MockRequestHandler {
 
     private final MockRegistryService registry;
     private final com.elli.mockserver.service.TemplateResolutionService templateService;
+    private final com.elli.mockserver.service.StatisticsService statisticsService;
 
     public MockRequestHandler(MockRegistryService registry,
-            com.elli.mockserver.service.TemplateResolutionService templateService) {
+            com.elli.mockserver.service.TemplateResolutionService templateService,
+            com.elli.mockserver.service.StatisticsService statisticsService) {
         this.registry = registry;
         this.templateService = templateService;
+        this.statisticsService = statisticsService;
     }
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -70,6 +73,8 @@ public class MockRequestHandler {
         response.setStatus(route.getStatusCode());
         response.setContentType("application/json");
         objectMapper.writeValue(response.getWriter(), finalBody);
+
+        statisticsService.incrementRequestsServed();
     }
 
     private Object substitutePathVars(Object body, Map<String, String> pathVars) {

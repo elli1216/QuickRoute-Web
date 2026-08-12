@@ -10,7 +10,7 @@ interface MockCardProps {
   isDeleting: boolean
 }
 
-export function MockCard({ mock, onDelete, isDeleting }: MockCardProps) {
+export function MockCard({ mock }: MockCardProps) {
   return (
     <Card className="card-glass">
       <CardHeader className="pb-3">

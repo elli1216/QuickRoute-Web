@@ -10,6 +10,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
@@ -45,13 +46,16 @@ class MockRegistryServiceTest {
 
     private MockConfiguration mockConfiguration;
     private RouteDefinition routeDefinition;
+    private StatisticsService statisticsService;
 
     @BeforeEach
     void setUp() {
-        mockRegistryService = new MockRegistryService(mockRepo, routeRegistrar, routeMatcherService, cacheManager);
+        mockRegistryService = new MockRegistryService(mockRepo, routeRegistrar, routeMatcherService, cacheManager,
+                statisticsService);
 
         routeDefinition = new RouteDefinition("GET", "/users/:id", "{\"name\":\"Test\"}", 0, 200);
-        mockConfiguration = new MockConfiguration("test-mock-id", List.of(routeDefinition), LocalDateTime.now().plusHours(1));
+        mockConfiguration = new MockConfiguration("test-mock-id", List.of(routeDefinition),
+                LocalDateTime.now().plusHours(1));
         routeDefinition.setMock(mockConfiguration);
     }
 
@@ -86,7 +90,7 @@ class MockRegistryServiceTest {
 
         assertNull(result);
     }
-    
+
     @Test
     void testFindRoute_MethodMismatch() {
         when(mockRepo.findById("test-mock-id")).thenReturn(Optional.of(mockConfiguration));
@@ -98,22 +102,24 @@ class MockRegistryServiceTest {
 
     @Test
     void testExtractPathVariables() {
-        Map<String, String> vars = mockRegistryService.extractPathVariables("/mock/test-mock-id/users/123", "/users/:id");
-        
+        Map<String, String> vars = mockRegistryService.extractPathVariables("/mock/test-mock-id/users/123",
+                "/users/:id");
+
         assertEquals(1, vars.size());
         assertEquals("123", vars.get("id"));
     }
 
     @Test
     void testCleanupExpiredMocks() {
-        MockConfiguration expiredMock = new MockConfiguration("expired-id", List.of(routeDefinition), LocalDateTime.now().minusHours(1));
-        
+        MockConfiguration expiredMock = new MockConfiguration("expired-id", List.of(routeDefinition),
+                LocalDateTime.now().minusHours(1));
+
         Page<MockConfiguration> page1 = new PageImpl<>(List.of(expiredMock));
         Page<MockConfiguration> page2 = new PageImpl<>(List.of()); // empty page to stop loop
-        
+
         when(mockRepo.findByExpiresAtBefore(any(LocalDateTime.class), any(Pageable.class)))
-            .thenReturn(page1)
-            .thenReturn(page2);
+                .thenReturn(page1)
+                .thenReturn(page2);
 
         Cache mockCache = mock(Cache.class);
         when(cacheManager.getCache("mocks")).thenReturn(mockCache);

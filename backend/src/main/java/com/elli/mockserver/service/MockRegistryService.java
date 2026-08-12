@@ -29,15 +29,18 @@ public class MockRegistryService {
     private final DynamicRouteRegistrar routeRegistrar;
     private final RouteMatcherService routeMatcherService;
     private final CacheManager cacheManager;
+    private final StatisticsService statisticsService;
 
     public MockRegistryService(MockConfigurationRepository mockRepo,
             @Lazy DynamicRouteRegistrar routeRegistrar,
             RouteMatcherService routeMatcherService,
-            CacheManager cacheManager) {
+            CacheManager cacheManager,
+            StatisticsService statisticsService) {
         this.mockRepo = mockRepo;
         this.routeRegistrar = routeRegistrar;
         this.routeMatcherService = routeMatcherService;
         this.cacheManager = cacheManager;
+        this.statisticsService = statisticsService;
     }
 
     @Transactional
@@ -48,6 +51,7 @@ public class MockRegistryService {
             route.setMock(mock);
         }
         mockRepo.save(mock);
+        statisticsService.incrementMocksCreated();
     }
 
     @Transactional
