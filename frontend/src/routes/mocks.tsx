@@ -167,11 +167,7 @@ function MyMocks() {
             </CardContent>
           </Card>
         ) : (
-          <MocksTable
-            data={allMocks}
-            onDelete={handleDelete}
-            deletingId={deletingId}
-          />
+          <MocksTable data={allMocks} />
         )}
       </section>
       <Toaster />

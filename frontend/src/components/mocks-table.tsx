@@ -1,14 +1,12 @@
 import { useState } from 'react'
-import type {
-  ColumnDef,
-  SortingState} from '@tanstack/react-table';
+import type { ColumnDef, SortingState } from '@tanstack/react-table'
 import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  useReactTable
+  useReactTable,
 } from '@tanstack/react-table'
 import {
   Table,
@@ -20,32 +18,82 @@ import {
 } from '#/components/ui/table'
 import { Input } from '#/components/ui/input'
 import { Button } from '#/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '#/components/ui/dialog'
+import { buildEndpointUrl, buildCurl } from '#/lib/api'
 import type { MockSummary } from '#/lib/api'
-import { Trash2 } from 'lucide-react'
+import { Badge } from '#/components/ui/badge'
+import { Copy, Check } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface MocksTableProps {
   data: MockSummary[]
-  onDelete: (id: string) => void
-  deletingId: string | null
 }
 
-export function MocksTable({ data, onDelete, deletingId }: MocksTableProps) {
+function MethodBadge({ method }: { method: string }) {
+  const colors: Record<string, string> = {
+    GET: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
+    POST: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
+    PUT: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
+    PATCH:
+      'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20',
+    DELETE:
+      'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20',
+  }
+  return (
+    <Badge
+      variant="outline"
+      className={`font-mono text-xs font-bold ${colors[method] || ''}`}
+    >
+      {method}
+    </Badge>
+  )
+}
+
+export function MocksTable({ data }: MocksTableProps) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [globalFilter, setGlobalFilter] = useState('')
+  const [selectedMock, setSelectedMock] = useState<MockSummary | null>(null)
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
+
+  const copyToClipboard = (text: string, index: number) => {
+    navigator.clipboard.writeText(text)
+    setCopiedIndex(index)
+    toast.success('Copied curl command to clipboard')
+    setTimeout(() => setCopiedIndex(null), 2000)
+  }
 
   const columns: ColumnDef<MockSummary>[] = [
     {
       accessorKey: 'mockId',
       header: 'Mock ID',
-      cell: ({ row }) => (
-        <span className="font-mono text-sm font-medium">
-          {row.getValue('mockId')}
-        </span>
-      ),
+      cell: ({ row }) => {
+        const mock = row.original
+        return (
+          <button
+            type="button"
+            onClick={() => setSelectedMock(mock)}
+            className="font-mono text-sm font-semibold text-(--lagoon) hover:underline cursor-pointer text-left"
+          >
+            {mock.mockId}
+          </button>
+        )
+      },
     },
     {
       accessorKey: 'routeCount',
       header: 'Routes',
+      cell: ({ row }) => (
+        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-black/5 dark:bg-white/10">
+          {row.getValue('routeCount')}{' '}
+          {row.getValue('routeCount') === 1 ? 'route' : 'routes'}
+        </span>
+      ),
     },
     {
       accessorKey: 'createdAt',
@@ -61,26 +109,6 @@ export function MocksTable({ data, onDelete, deletingId }: MocksTableProps) {
       cell: ({ row }) => {
         const d = new Date(row.getValue('expiresAt'))
         return <span className="opacity-70">{d.toLocaleString()}</span>
-      },
-    },
-    {
-      id: 'actions',
-      cell: ({ row }) => {
-        const mock = row.original
-        const isDeleting = deletingId === mock.mockId
-        return (
-          <div className="flex justify-end gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => onDelete(mock.mockId)}
-              disabled={isDeleting}
-              className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 border-transparent shadow-none"
-            >
-              <Trash2 className="w-4 h-4" />
-            </Button>
-          </div>
-        )
       },
     },
   ]
@@ -104,7 +132,7 @@ export function MocksTable({ data, onDelete, deletingId }: MocksTableProps) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <Input
-          placeholder="Search mocks..."
+          placeholder="Search mocks by ID or date..."
           value={globalFilter}
           onChange={(event) => setGlobalFilter(event.target.value)}
           className="max-w-sm bg-(--surface-strong) border-transparent shadow-none"
@@ -136,7 +164,7 @@ export function MocksTable({ data, onDelete, deletingId }: MocksTableProps) {
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
@@ -159,7 +187,7 @@ export function MocksTable({ data, onDelete, deletingId }: MocksTableProps) {
                   colSpan={columns.length}
                   className="h-24 text-center text-(--sea-ink-soft)"
                 >
-                  No results.
+                  No results found.
                 </TableCell>
               </TableRow>
             )}
@@ -187,6 +215,81 @@ export function MocksTable({ data, onDelete, deletingId }: MocksTableProps) {
           Next
         </Button>
       </div>
+
+      {/* Routes Modal */}
+      <Dialog
+        open={!!selectedMock}
+        onOpenChange={(open) => !open && setSelectedMock(null)}
+      >
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 font-mono text-lg">
+              Mock:{' '}
+              <span className="text-(--lagoon)">{selectedMock?.mockId}</span>
+            </DialogTitle>
+            <DialogDescription>
+              Configured routes and endpoints for this mock server.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 mt-2">
+            {selectedMock?.routes && selectedMock.routes.length > 0 ? (
+              selectedMock.routes.map((route, idx) => {
+                const endpointUrl = buildEndpointUrl(
+                  selectedMock.mockId,
+                  route.pathPattern,
+                )
+                const curlCmd = buildCurl(route.method, endpointUrl)
+                const isCopied = copiedIndex === idx
+
+                return (
+                  <div
+                    key={idx}
+                    className="p-4 rounded-xl border border-(--line) bg-black/5 dark:bg-white/5 space-y-3"
+                  >
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <div className="flex items-center gap-2 font-mono text-sm font-semibold">
+                        <MethodBadge method={route.method} />
+                        <span>{route.pathPattern}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs font-mono opacity-80">
+                        <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold">
+                          {route.statusCode}
+                        </span>
+                        {route.delayMs > 0 && (
+                          <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                            {route.delayMs}ms delay
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between bg-black/80 text-slate-200 dark:bg-black/40 p-2.5 rounded-lg font-mono text-xs overflow-x-auto gap-2">
+                      <code className="truncate flex-1">{curlCmd}</code>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-7 w-7 shrink-0 text-slate-400 hover:text-white hover:bg-white/10"
+                        onClick={() => copyToClipboard(curlCmd, idx)}
+                      >
+                        {isCopied ? (
+                          <Check className="w-3.5 h-3.5 text-emerald-400" />
+                        ) : (
+                          <Copy className="w-3.5 h-3.5" />
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                )
+              })
+            ) : (
+              <p className="text-sm text-center py-6 text-(--sea-ink-soft)">
+                No route details available for this mock.
+              </p>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

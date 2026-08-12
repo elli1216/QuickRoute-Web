@@ -16,10 +16,16 @@ interface GlobalStats {
 }
 
 export function StatsChart() {
-  const { data: statsData } = useQuery<GlobalStats[], Error, { sorted: GlobalStats[], totalMocks: number, totalReqs: number }>({
+  const { data: statsData } = useQuery<
+    GlobalStats[],
+    Error,
+    { sorted: GlobalStats[]; totalMocks: number; totalReqs: number }
+  >({
     queryKey: ['global-stats'],
     queryFn: async () => {
-      const res = await fetch('https://quickroute-backend-cwro.onrender.com/api/stats')
+      const res = await fetch(
+        'https://quickroute-backend-cwro.onrender.com/api/stats',
+      )
       if (!res.ok) throw new Error('Failed to fetch')
       return res.json()
     },
@@ -28,13 +34,16 @@ export function StatsChart() {
         return { sorted: [], totalMocks: 0, totalReqs: 0 }
       }
       const sorted = [...stats].sort(
-        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
       )
       const totalMocks = sorted.reduce((sum, s) => sum + s.totalMocksCreated, 0)
-      const totalReqs = sorted.reduce((sum, s) => sum + s.totalRequestsServed, 0)
+      const totalReqs = sorted.reduce(
+        (sum, s) => sum + s.totalRequestsServed,
+        0,
+      )
 
       return { sorted, totalMocks, totalReqs }
-    }
+    },
   })
 
   const data = statsData?.sorted || []
