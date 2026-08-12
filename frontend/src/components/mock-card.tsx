@@ -29,15 +29,6 @@ export function MockCard({ mock, onDelete, isDeleting }: MockCardProps) {
               Expires {new Date(mock.expiresAt).toLocaleString()}
             </p>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onDelete(mock.mockId)}
-            disabled={isDeleting}
-            style={{ color: '#ef4444', borderColor: '#fecaca' }}
-          >
-            {isDeleting ? 'Deleting...' : 'Delete'}
-          </Button>
         </div>
       </CardHeader>
       <CardContent>
