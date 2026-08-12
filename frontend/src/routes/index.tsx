@@ -11,9 +11,6 @@ function Home() {
       <section className="page-wrap pt-20 md:pt-32 pb-16 md:pb-24 text-center relative">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-200 h-125 bg-blue-500/10 dark:bg-blue-500/5 blur-[120px] rounded-full pointer-events-none -z-10" />
         <div className="rise-in relative z-10">
-          <span className="island-kicker mb-6 inline-block font-medium tracking-wide shadow-sm">
-            Free &bull; No login &bull; Open source
-          </span>
           <img
             src="/main-logo.svg"
             alt="QuickRoute"

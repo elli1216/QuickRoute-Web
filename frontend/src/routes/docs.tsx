@@ -2,73 +2,14 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
 import { CodeWindow } from '#/components/ui/code-window'
 import { ScreenWindow } from '#/components/ui/screen-window'
+import { fakerCategories } from '#/constants'
+import { TUTORIALS } from '#/constants/tutorials'
 
 export const Route = createFileRoute('/docs')({
   component: DocsPage,
 })
 
 function DocsPage() {
-  const fakerCategories = [
-    {
-      category: 'Name',
-      items: [
-        { variable: '{{name.firstName}}', example: 'Alice' },
-        { variable: '{{name.lastName}}', example: 'Smith' },
-        { variable: '{{name.fullName}}', example: 'Alice Smith' },
-        { variable: '{{name.title}}', example: 'Software Engineer' },
-      ],
-    },
-    {
-      category: 'Internet',
-      items: [
-        { variable: '{{internet.email}}', example: 'alice@example.com' },
-        { variable: '{{internet.username}}', example: 'alice_smith99' },
-        { variable: '{{internet.password}}', example: 'aBc!23XYZ' },
-        { variable: '{{internet.url}}', example: 'https://example.com' },
-        { variable: '{{internet.uuid}}', example: '123e4567-e89b-12d3-a456-426614174000' },
-      ],
-    },
-    {
-      category: 'Address',
-      items: [
-        { variable: '{{address.city}}', example: 'San Francisco' },
-        { variable: '{{address.streetAddress}}', example: '123 Main St' },
-        { variable: '{{address.country}}', example: 'United States' },
-        { variable: '{{address.zipCode}}', example: '94105' },
-      ],
-    },
-    {
-      category: 'Lorem (Placeholder Text)',
-      items: [
-        { variable: '{{lorem.word}}', example: 'voluptatem' },
-        { variable: '{{lorem.sentence}}', example: 'Lorem ipsum dolor sit amet.' },
-        { variable: '{{lorem.paragraph}}', example: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit...' },
-      ],
-    },
-    {
-      category: 'Commerce',
-      items: [
-        { variable: '{{commerce.productName}}', example: 'Ergonomic Keyboard' },
-        { variable: '{{commerce.price}}', example: '99.99' },
-        { variable: '{{commerce.department}}', example: 'Electronics' },
-      ],
-    },
-    {
-      category: 'Date & Time',
-      items: [
-        { variable: '{{date.past}}', example: '2023-05-12T14:22:11Z' },
-        { variable: '{{date.future}}', example: '2028-11-01T08:00:00Z' },
-      ],
-    },
-    {
-      category: 'Company',
-      items: [
-        { variable: '{{company.name}}', example: 'Acme Corp' },
-        { variable: '{{company.industry}}', example: 'Technology' },
-      ],
-    },
-  ]
-
   return (
     <div className="page-wrap py-12 md:py-16 px-4 md:px-0 max-w-5xl mx-auto space-y-12">
       <div className="text-center rise-in">
@@ -77,64 +18,35 @@ function DocsPage() {
         </h1>
       </div>
 
-      <section className="space-y-6">
-        <h2 className="text-2xl font-bold border-b border-(--line) pb-2">
-          Tutorial: How to Mock Your First API
-        </h2>
-        <div className="space-y-10">
-          <Card className="card-glass">
-            <CardHeader>
-              <CardTitle className="text-xl flex items-center gap-3">
-                <span className="w-8 h-8 rounded-full bg-(--lagoon) text-white flex items-center justify-center text-base shadow-lg shadow-blue-500/20">1</span>
-                Define Route
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <p className="text-base leading-relaxed" style={{ color: 'var(--sea-ink-soft)' }}>
-                Head over to the <strong>Create Mock</strong> page. Select your HTTP method (e.g., <code>GET</code>, <code>POST</code>) and define the path (e.g., <code>/api/users</code>). You can also use path variables like <code>/api/users/:id</code>.
-              </p>
-              <ScreenWindow title="quickroute.dev/create">
-                <img src="/steps/step1.png" alt="Step 1: Define Route" className="w-full h-auto object-cover" />
-              </ScreenWindow>
-            </CardContent>
-          </Card>
-
-          <Card className="card-glass">
-            <CardHeader>
-              <CardTitle className="text-xl flex items-center gap-3">
-                <span className="w-8 h-8 rounded-full bg-(--lagoon) text-white flex items-center justify-center text-base shadow-lg shadow-blue-500/20">2</span>
-                Set Response
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <p className="text-base leading-relaxed" style={{ color: 'var(--sea-ink-soft)' }}>
-                Choose a status code and an optional delay (great for testing loading states). Then, use the Visual Field Builder or Raw JSON editor to craft exactly what the API should return.
-              </p>
-              <ScreenWindow title="quickroute.dev/create">
-                <img src="/steps/step2.png" alt="Step 2: Set Response" className="w-full h-auto object-cover" />
-              </ScreenWindow>
-            </CardContent>
-          </Card>
-
-          <Card className="card-glass">
-            <CardHeader>
-              <CardTitle className="text-xl flex items-center gap-3">
-                <span className="w-8 h-8 rounded-full bg-(--lagoon) text-white flex items-center justify-center text-base shadow-lg shadow-blue-500/20">3</span>
-                Call It!
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <p className="text-base leading-relaxed" style={{ color: 'var(--sea-ink-soft)' }}>
-                Hit <strong>Create Mock</strong>. You will receive a unique Mock ID and a base URL. Simply point your frontend application or curl commands to that URL, and you're done!
-              </p>
-              <ScreenWindow title="quickroute.dev/create">
-                <img src="/steps/step3.png" alt="Step 3: Call It!" className="w-full h-auto object-cover" />
-              </ScreenWindow>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
+      {TUTORIALS.map((tutorial, i) => (
+        <section key={i} className="space-y-6">
+          <h2 className="text-2xl font-bold border-b border-(--line) pb-2">
+            {tutorial.title}
+          </h2>
+          <div className="space-y-10">
+            {tutorial.steps.map((step, index) => (
+              <Card key={index} className="card-glass">
+                <CardHeader>
+                  <CardTitle className="text-xl flex items-center gap-3">
+                    <span className="w-8 h-8 rounded-full bg-(--lagoon) text-white flex items-center justify-center text-base shadow-lg shadow-blue-500/20">
+                      {index + 1}
+                    </span>
+                    {step.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <p className="text-base leading-relaxed" style={{ color: 'var(--sea-ink-soft)' }}>
+                    {step.description}
+                  </p>
+                  <ScreenWindow title="quickroute.dev/create">
+                    <img src={step.imageSrc} alt={step.imageAlt} className="w-full h-auto object-cover" />
+                  </ScreenWindow>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+      ))}
       <section className="space-y-6">
         <div className="space-y-2">
           <h2 className="text-2xl font-bold border-b border-(--line) pb-2">
