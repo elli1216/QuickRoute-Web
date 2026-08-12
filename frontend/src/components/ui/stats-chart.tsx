@@ -1,3 +1,4 @@
+import { BASE } from '#/lib/constants'
 import { useQuery } from '@tanstack/react-query'
 import {
   Area,
@@ -23,9 +24,7 @@ export function StatsChart() {
   >({
     queryKey: ['global-stats'],
     queryFn: async () => {
-      const res = await fetch(
-        'https://quickroute-backend-cwro.onrender.com/api/stats',
-      )
+      const res = await fetch(`${BASE}/api/stats`)
       if (!res.ok) throw new Error('Failed to fetch')
       return res.json()
     },

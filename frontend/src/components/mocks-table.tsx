@@ -28,7 +28,7 @@ import {
 import { buildEndpointUrl, buildCurl } from '#/lib/api'
 import type { MockSummary } from '#/lib/api'
 import { Badge } from '#/components/ui/badge'
-import { Copy, Check } from 'lucide-react'
+import { Key, Copy, Check } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface MocksTableProps {
@@ -221,7 +221,7 @@ export function MocksTable({ data }: MocksTableProps) {
         open={!!selectedMock}
         onOpenChange={(open) => !open && setSelectedMock(null)}
       >
-        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+        <DialogContent className="w-[95vw] sm:max-w-xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 font-mono text-lg">
               Mock:{' '}
@@ -239,7 +239,12 @@ export function MocksTable({ data }: MocksTableProps) {
                   selectedMock.mockId,
                   route.pathPattern,
                 )
-                const curlCmd = buildCurl(route.method, endpointUrl)
+                const curlCmd = buildCurl(
+                  route.method,
+                  endpointUrl,
+                  route.authType,
+                  route.expectedToken,
+                )
                 const isCopied = copiedIndex === idx
 
                 return (
@@ -252,7 +257,7 @@ export function MocksTable({ data }: MocksTableProps) {
                         <MethodBadge method={route.method} />
                         <span>{route.pathPattern}</span>
                       </div>
-                      <div className="flex items-center gap-2 text-xs font-mono opacity-80">
+                      <div className="flex items-center gap-2 text-xs font-mono opacity-80 flex-wrap">
                         <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold">
                           {route.statusCode}
                         </span>
@@ -261,8 +266,30 @@ export function MocksTable({ data }: MocksTableProps) {
                             {route.delayMs}ms delay
                           </span>
                         )}
+                        {(route.expectedToken ||
+                          (route.authType && route.authType !== 'NONE')) && (
+                          <span className="px-2 py-0.5 rounded bg-purple-500/10 text-purple-600 dark:text-purple-400 font-semibold flex items-center gap-1">
+                            <Key className="w-3 h-3" />
+                            {route.authType || 'AUTH'}
+                          </span>
+                        )}
                       </div>
                     </div>
+
+                    {route.expectedToken && (
+                      <div className="flex items-center gap-2 text-xs font-mono bg-purple-500/10 text-purple-700 dark:text-purple-300 p-2 rounded-lg border border-purple-500/20">
+                        <Key className="w-3.5 h-3.5 shrink-0 text-purple-500" />
+                        <span className="font-medium">Auth Token:</span>
+                        <code className="bg-purple-500/20 px-1.5 py-0.5 rounded font-bold">
+                          {route.expectedToken}
+                        </code>
+                        {route.authType && (
+                          <span className="opacity-70 text-[10px]">
+                            ({route.authType})
+                          </span>
+                        )}
+                      </div>
+                    )}
 
                     <div className="flex items-center justify-between bg-black/80 text-slate-200 dark:bg-black/40 p-2.5 rounded-lg font-mono text-xs overflow-x-auto gap-2">
                       <code className="truncate flex-1">{curlCmd}</code>

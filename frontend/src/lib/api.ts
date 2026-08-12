@@ -1,4 +1,5 @@
-const BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:8080'
+import { BASE } from './constants'
+
 // trigger
 export interface RouteFormInput {
   method: string
@@ -32,6 +33,8 @@ export interface MockSummary {
     pathPattern: string
     statusCode: number
     delayMs: number
+    authType?: string
+    expectedToken?: string
   }>
 }
 
@@ -39,8 +42,20 @@ export function buildEndpointUrl(mockId: string, pathPattern: string): string {
   return `${BASE}/mock/${mockId}${pathPattern}`
 }
 
-export function buildCurl(method: string, url: string): string {
-  const cmd = method === 'GET' ? `curl ${url}` : `curl -X ${method} ${url}`
+export function buildCurl(
+  method: string,
+  url: string,
+  authType?: string,
+  expectedToken?: string,
+): string {
+  let cmd = method === 'GET' ? `curl "${url}"` : `curl -X ${method} "${url}"`
+  if (authType && expectedToken) {
+    if (authType === 'BEARER') {
+      cmd += ` -H "Authorization: Bearer ${expectedToken}"`
+    } else if (authType === 'HEADER') {
+      cmd += ` -H "X-API-Key: ${expectedToken}"`
+    }
+  }
   return cmd
 }
 

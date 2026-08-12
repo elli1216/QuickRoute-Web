@@ -41,7 +41,7 @@ function DocsPage() {
                   >
                     {step.description}
                   </p>
-                  <ScreenWindow title="quickroute.dev/create">
+                  <ScreenWindow title="quickroute.app/create">
                     <img
                       src={step.imageSrc}
                       alt={step.imageAlt}

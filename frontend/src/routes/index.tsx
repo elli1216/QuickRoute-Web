@@ -58,6 +58,7 @@ function Home() {
           <h2 className="display-title text-3xl md:text-5xl font-bold px-4">
             How it works
           </h2>
+          <div className="w-16 h-1 rounded-full bg-linear-to-r from-blue-500 to-indigo-500 mx-auto mt-4" />
           <p
             className="mt-4 px-4 text-lg font-medium"
             style={{ color: 'var(--sea-ink-soft)' }}
@@ -97,6 +98,7 @@ function Home() {
           <h2 className="display-title text-3xl md:text-5xl font-bold px-4">
             Everything you need
           </h2>
+          <div className="w-16 h-1 rounded-full bg-linear-to-r from-blue-500 to-indigo-500 mx-auto mt-4" />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mt-12 md:mt-16">
@@ -136,6 +138,7 @@ function Home() {
           <h2 className="display-title text-3xl md:text-5xl font-bold px-4">
             Try it right now
           </h2>
+          <div className="w-16 h-1 rounded-full bg-linear-to-r from-blue-500 to-indigo-500 mx-auto mt-4" />
           <p
             className="mt-4 px-4 text-lg font-medium"
             style={{ color: 'var(--sea-ink-soft)' }}

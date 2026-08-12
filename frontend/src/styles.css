@@ -195,11 +195,10 @@ pre code {
 
 .display-title {
   font-family: var(--font-heading);
-  letter-spacing: -0.035em;
   font-weight: 800;
   background: linear-gradient(135deg, var(--foreground), var(--lagoon));
   -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  -webkit-text-fill-color: var(--primary);
 }
 
 .island-shell {
