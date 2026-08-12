@@ -23,8 +23,8 @@ export function MockCard({ mock }: MockCardProps) {
               className="text-xs mt-1"
               style={{ color: 'var(--sea-ink-soft)' }}
             >
-              {mock.routeCount} route{mock.routeCount !== 1 ? 's' : ''}{' '}
-              &bull; Created {new Date(mock.createdAt).toLocaleString()}
+              {mock.routeCount} route{mock.routeCount !== 1 ? 's' : ''} &bull;
+              Created {new Date(mock.createdAt).toLocaleString()}
               <br />
               Expires {new Date(mock.expiresAt).toLocaleString()}
             </p>

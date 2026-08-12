@@ -11,13 +11,13 @@ import { RouteCard } from '#/components/create/RouteCard'
 export const Route = createFileRoute('/create')({ component: CreateMock })
 
 function CreateMock() {
-  const routes = useCreateStore(state => state.routes)
-  const expiresInHours = useCreateStore(state => state.expiresInHours)
-  const result = useCreateStore(state => state.result)
-  const submitting = useCreateStore(state => state.submitting)
-  const addRoute = useCreateStore(state => state.addRoute)
-  const handleSubmit = useCreateStore(state => state.handleSubmit)
-  const setExpiresInHours = useCreateStore(state => state.setExpiresInHours)
+  const routes = useCreateStore((state) => state.routes)
+  const expiresInHours = useCreateStore((state) => state.expiresInHours)
+  const result = useCreateStore((state) => state.result)
+  const submitting = useCreateStore((state) => state.submitting)
+  const addRoute = useCreateStore((state) => state.addRoute)
+  const handleSubmit = useCreateStore((state) => state.handleSubmit)
+  const setExpiresInHours = useCreateStore((state) => state.setExpiresInHours)
 
   if (result) {
     return (

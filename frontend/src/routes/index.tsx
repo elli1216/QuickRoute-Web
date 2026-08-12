@@ -10,7 +10,6 @@ function Home() {
     <div className="overflow-hidden">
       {/* Hero */}
       <section className="page-wrap pt-20 md:pt-32 pb-16 md:pb-24 text-center relative">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-200 h-125 bg-blue-500/10 dark:bg-blue-500/5 blur-[120px] rounded-full pointer-events-none -z-10" />
         <div className="rise-in relative z-10">
           <img
             src="/main-logo.svg"
@@ -33,7 +32,9 @@ function Home() {
               className="group inline-flex items-center justify-center px-8 py-3.5 rounded-xl font-semibold text-lg glow-button transition-transform active:scale-95"
             >
               Start Mocking
-              <span className="ml-2 transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
+              <span className="ml-2 transition-transform duration-300 group-hover:translate-x-1">
+                &rarr;
+              </span>
             </Link>
             <Link
               to="/docs"
@@ -49,7 +50,10 @@ function Home() {
       <StatsChart />
 
       {/* How it works */}
-      <section id="how-it-works" className="page-wrap py-16 md:py-24 relative z-10">
+      <section
+        id="how-it-works"
+        className="page-wrap py-16 md:py-24 relative z-10"
+      >
         <div className="text-center">
           <h2 className="display-title text-3xl md:text-5xl font-bold px-4">
             How it works
@@ -76,7 +80,10 @@ function Home() {
                 {item.step}
               </div>
               <h3 className="text-xl font-bold">{item.title}</h3>
-              <p className="mt-3 leading-relaxed text-sm font-medium" style={{ color: 'var(--sea-ink-soft)' }}>
+              <p
+                className="mt-3 leading-relaxed text-sm font-medium"
+                style={{ color: 'var(--sea-ink-soft)' }}
+              >
                 {item.desc}
               </p>
             </div>
@@ -100,7 +107,14 @@ function Home() {
                 key={feat.title}
                 className="island-shell p-6 group hover:-translate-y-1 transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/5 cursor-default"
               >
-                <div className="mb-4 p-3 rounded-xl inline-block transition-transform duration-300 group-hover:scale-110" style={{ background: 'color-mix(in srgb, var(--lagoon) 10%, transparent)', color: 'var(--lagoon)' }}>
+                <div
+                  className="mb-4 p-3 rounded-xl inline-block transition-transform duration-300 group-hover:scale-110"
+                  style={{
+                    background:
+                      'color-mix(in srgb, var(--lagoon) 10%, transparent)',
+                    color: 'var(--lagoon)',
+                  }}
+                >
                   <Icon size={24} />
                 </div>
                 <h3 className="font-bold text-lg">{feat.title}</h3>
@@ -144,52 +158,78 @@ function Home() {
               <CodeWindow
                 title={
                   <>
-                    <span className="px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 font-bold">GET</span>
+                    <span className="px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 font-bold">
+                      GET
+                    </span>
                     <span>/users</span>
                     <span className="ml-2 opacity-70">200 OK</span>
                   </>
                 }
               >
-                <pre><code>{`[
+                <pre>
+                  <code>{`[
   {"id": 1, "name": "Alice"},
   {"id": 2, "name": "Bob"}
-]`}</code></pre>
+]`}</code>
+                </pre>
               </CodeWindow>
 
               <CodeWindow
                 title={
                   <>
-                    <span className="px-2 py-0.5 rounded bg-yellow-500/20 text-yellow-400 font-bold">POST</span>
+                    <span className="px-2 py-0.5 rounded bg-yellow-500/20 text-yellow-400 font-bold">
+                      POST
+                    </span>
                     <span>/users</span>
                     <span className="ml-2 opacity-70">201 Created (500ms)</span>
                   </>
                 }
               >
-                <pre><code>{`{"id": 99, "name": "Created"}`}</code></pre>
+                <pre>
+                  <code>{`{"id": 99, "name": "Created"}`}</code>
+                </pre>
               </CodeWindow>
             </div>
           </div>
 
           <div className="island-shell p-6 md:p-8 min-w-0 flex flex-col hover:border-indigo-500/30 transition-colors duration-500">
             <div className="flex items-center gap-2 mb-4">
-              <span className="island-kicker mb-0! bg-indigo-500/10! text-indigo-500!">What you get</span>
+              <span className="island-kicker mb-0! bg-indigo-500/10! text-indigo-500!">
+                What you get
+              </span>
             </div>
             <h3 className="text-lg md:text-xl font-bold mt-1">
               Live endpoints you can call
             </h3>
 
             <div className="mt-6 flex-1 flex flex-col">
-              <CodeWindow title={<span className="opacity-70">Terminal</span>} className="flex-1">
+              <CodeWindow
+                title={<span className="opacity-70">Terminal</span>}
+                className="flex-1"
+              >
                 <pre className="flex-1 whitespace-pre-wrap">
-                  <code style={{ color: 'var(--lagoon)' }}>{`$ curl `}</code><code style={{ color: 'var(--kicker)' }}>/mock/abc123/users</code>
+                  <code style={{ color: 'var(--lagoon)' }}>{`$ curl `}</code>
+                  <code style={{ color: 'var(--kicker)' }}>
+                    /mock/abc123/users
+                  </code>
                   <br />
                   <code className="opacity-70">{`→ [{"id":1,"name":"Alice"},...]`}</code>
-                  <br /><br />
-                  <code style={{ color: 'var(--lagoon)' }}>{`$ curl `}</code><code style={{ color: 'var(--kicker)' }}>/mock/abc123/users/42</code>
+                  <br />
+                  <br />
+                  <code style={{ color: 'var(--lagoon)' }}>{`$ curl `}</code>
+                  <code style={{ color: 'var(--kicker)' }}>
+                    /mock/abc123/users/42
+                  </code>
                   <br />
                   <code className="opacity-70">{`→ {"id":"42","name":"User 42"}`}</code>
-                  <br /><br />
-                  <code style={{ color: 'var(--lagoon)' }}>{`$ curl -X POST `}</code><code style={{ color: 'var(--kicker)' }}>/mock/abc123/users</code>
+                  <br />
+                  <br />
+                  <code
+                    style={{ color: 'var(--lagoon)' }}
+                  >{`$ curl -X POST `}</code>
+                  <code style={{ color: 'var(--kicker)' }}>
+                    /mock/abc123/users
+                  </code>
                   <br />
                   <code className="opacity-70">{`→ {"id":99,"name":"Created"}`}</code>
                 </pre>
@@ -198,8 +238,11 @@ function Home() {
                 className="text-sm mt-5 leading-relaxed font-medium"
                 style={{ color: 'var(--sea-ink-soft)' }}
               >
-                Path variables like <code className="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 font-bold">:id</code> substitute into your response
-                body automatically.
+                Path variables like{' '}
+                <code className="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 font-bold">
+                  :id
+                </code>{' '}
+                substitute into your response body automatically.
               </p>
             </div>
           </div>
@@ -211,7 +254,9 @@ function Home() {
             className="group inline-flex items-center justify-center px-8 py-3.5 rounded-xl font-semibold text-lg glow-button transition-transform active:scale-95"
           >
             Try the visual builder
-            <span className="ml-2 transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
+            <span className="ml-2 transition-transform duration-300 group-hover:translate-x-1">
+              &rarr;
+            </span>
           </Link>
         </div>
       </section>
@@ -221,7 +266,9 @@ function Home() {
         className="site-footer py-10 mt-10 text-center text-sm border-t border-black/5 dark:border-white/5"
         style={{ color: 'var(--sea-ink-soft)' }}
       >
-        <p className="font-medium">QuickRoute &mdash; Free and open source API mocking.</p>
+        <p className="font-medium">
+          QuickRoute &mdash; Free and open source API mocking.
+        </p>
       </footer>
     </div>
   )

@@ -6,6 +6,7 @@ import { Input } from '#/components/ui/input'
 import { Toaster } from 'sonner'
 import { useMocksStore } from '#/stores/useMocksStore'
 import { MockCard } from '#/components/mock-card'
+import { MocksTable } from '#/components/mocks-table'
 import { FolderX } from 'lucide-react'
 
 export const Route = createFileRoute('/mocks')({ component: MyMocks })
@@ -19,17 +20,17 @@ function loadSavedMockIds(): string[] {
 }
 
 function MyMocks() {
-  const lookupId = useMocksStore(state => state.lookupId);
-  const mock = useMocksStore(state => state.mock);
-  const loading = useMocksStore(state => state.loading);
-  const deletingId = useMocksStore(state => state.deletingId);
-  const allMocks = useMocksStore(state => state.allMocks);
-  const allMocksLoading = useMocksStore(state => state.allMocksLoading);
-  const allMocksError = useMocksStore(state => state.allMocksError);
-  const setLookupId = useMocksStore(state => state.setLookupId);
-  const handleLookup = useMocksStore(state => state.handleLookup);
-  const handleDelete = useMocksStore(state => state.handleDelete);
-  const fetchAllMocks = useMocksStore(state => state.fetchAllMocks);
+  const lookupId = useMocksStore((state) => state.lookupId)
+  const mock = useMocksStore((state) => state.mock)
+  const loading = useMocksStore((state) => state.loading)
+  const deletingId = useMocksStore((state) => state.deletingId)
+  const allMocks = useMocksStore((state) => state.allMocks)
+  const allMocksLoading = useMocksStore((state) => state.allMocksLoading)
+  const allMocksError = useMocksStore((state) => state.allMocksError)
+  const setLookupId = useMocksStore((state) => state.setLookupId)
+  const handleLookup = useMocksStore((state) => state.handleLookup)
+  const handleDelete = useMocksStore((state) => state.handleDelete)
+  const fetchAllMocks = useMocksStore((state) => state.fetchAllMocks)
 
   const savedIds = loadSavedMockIds()
 
@@ -40,9 +41,7 @@ function MyMocks() {
   return (
     <div className="page-wrap py-12 md:py-16 px-4 md:px-0 max-w-5xl mx-auto space-y-12">
       <div className="text-center rise-in">
-        <h1 className="display-title text-3xl md:text-5xl font-bold">
-          Mocks
-        </h1>
+        <h1 className="display-title text-3xl md:text-5xl font-bold">Mocks</h1>
       </div>
 
       <div className="grid md:grid-cols-2 gap-6 items-start">
@@ -143,7 +142,9 @@ function MyMocks() {
         ) : allMocksError ? (
           <Card className="card-glass bg-red-500/5 border-red-500/20">
             <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-              <p className="text-red-400 font-semibold mb-2">Error loading mocks</p>
+              <p className="text-red-400 font-semibold mb-2">
+                Error loading mocks
+              </p>
               <p className="text-sm" style={{ color: 'var(--sea-ink-soft)' }}>
                 {allMocksError}
               </p>
@@ -160,22 +161,17 @@ function MyMocks() {
           <Card className="card-glass border-dashed border-2 border-(--line) shadow-none bg-transparent">
             <CardContent className="flex flex-col items-center justify-center py-16 text-center">
               <div className="w-16 h-16 rounded-full bg-(--surface-strong) flex items-center justify-center mb-6">
-                <FolderX className='size-20' />
+                <FolderX className="size-20" />
               </div>
               <h3 className="text-xl font-bold mb-2">No Mocks Found</h3>
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
-            {allMocks.map((m) => (
-              <MockCard
-                key={m.mockId}
-                mock={m}
-                onDelete={handleDelete}
-                isDeleting={deletingId === m.mockId}
-              />
-            ))}
-          </div>
+          <MocksTable
+            data={allMocks}
+            onDelete={handleDelete}
+            deletingId={deletingId}
+          />
         )}
       </section>
       <Toaster />

@@ -7,10 +7,10 @@ import { useCreateStore } from '#/stores/useCreateStore'
 import { CodeWindow } from '#/components/ui/code-window'
 
 export function MockResult() {
-  const result = useCreateStore(state => state.result)
-  const routes = useCreateStore(state => state.routes)
-  const expiresInHours = useCreateStore(state => state.expiresInHours)
-  const resetForm = useCreateStore(state => state.resetForm)
+  const result = useCreateStore((state) => state.result)
+  const routes = useCreateStore((state) => state.routes)
+  const expiresInHours = useCreateStore((state) => state.expiresInHours)
+  const resetForm = useCreateStore((state) => state.resetForm)
 
   if (!result) return null
 
@@ -135,7 +135,9 @@ export function MockResult() {
                 const curl = buildCurl(r.method, url)
                 return (
                   <CodeWindow key={i}>
-                    <pre><code>{curl}</code></pre>
+                    <pre>
+                      <code>{curl}</code>
+                    </pre>
                   </CodeWindow>
                 )
               })}

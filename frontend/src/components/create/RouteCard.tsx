@@ -23,14 +23,14 @@ interface RouteCardProps {
 }
 
 export function RouteCard({ i }: RouteCardProps) {
-  const routes = useCreateStore(state => state.routes)
-  const fieldTrees = useCreateStore(state => state.fieldTrees)
-  const responseModes = useCreateStore(state => state.responseModes)
-  const updateRoute = useCreateStore(state => state.updateRoute)
-  const updateFieldTree = useCreateStore(state => state.updateFieldTree)
-  const setResponseMode = useCreateStore(state => state.setResponseMode)
-  const cloneRoute = useCreateStore(state => state.cloneRoute)
-  const removeRoute = useCreateStore(state => state.removeRoute)
+  const routes = useCreateStore((state) => state.routes)
+  const fieldTrees = useCreateStore((state) => state.fieldTrees)
+  const responseModes = useCreateStore((state) => state.responseModes)
+  const updateRoute = useCreateStore((state) => state.updateRoute)
+  const updateFieldTree = useCreateStore((state) => state.updateFieldTree)
+  const setResponseMode = useCreateStore((state) => state.setResponseMode)
+  const cloneRoute = useCreateStore((state) => state.cloneRoute)
+  const removeRoute = useCreateStore((state) => state.removeRoute)
 
   const route = routes[i]
 
@@ -70,7 +70,7 @@ export function RouteCard({ i }: RouteCardProps) {
               value={route.method}
               onValueChange={(v) => updateRoute(i, 'method', v)}
             >
-              <SelectTrigger className='w-full'>
+              <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -121,9 +121,7 @@ export function RouteCard({ i }: RouteCardProps) {
               type="number"
               min={0}
               value={route.delay}
-              onChange={(e) =>
-                updateRoute(i, 'delay', Number(e.target.value))
-              }
+              onChange={(e) => updateRoute(i, 'delay', Number(e.target.value))}
             />
           </div>
           <div className="space-y-1.5">
@@ -132,7 +130,7 @@ export function RouteCard({ i }: RouteCardProps) {
               value={route.authType}
               onValueChange={(v) => updateRoute(i, 'authType', v)}
             >
-              <SelectTrigger className='w-full'>
+              <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -151,7 +149,9 @@ export function RouteCard({ i }: RouteCardProps) {
               <Input
                 placeholder="secret-token-123"
                 value={route.expectedToken}
-                onChange={(e) => updateRoute(i, 'expectedToken', e.target.value)}
+                onChange={(e) =>
+                  updateRoute(i, 'expectedToken', e.target.value)
+                }
               />
             </div>
           )}
@@ -163,10 +163,11 @@ export function RouteCard({ i }: RouteCardProps) {
             <div className="flex gap-1">
               <button
                 type="button"
-                className={`text-xs px-2 py-1 rounded-sm transition-colors ${(responseModes[i] ?? 'field') === 'field'
-                  ? 'font-semibold'
-                  : 'opacity-60 hover:opacity-100'
-                  }`}
+                className={`text-xs px-2 py-1 rounded-sm transition-colors ${
+                  (responseModes[i] ?? 'field') === 'field'
+                    ? 'font-semibold'
+                    : 'opacity-60 hover:opacity-100'
+                }`}
                 style={{
                   background:
                     (responseModes[i] ?? 'field') === 'field'
@@ -183,10 +184,11 @@ export function RouteCard({ i }: RouteCardProps) {
               </button>
               <button
                 type="button"
-                className={`text-xs px-2 py-1 rounded-sm transition-colors ${(responseModes[i] ?? 'field') === 'json'
-                  ? 'font-semibold'
-                  : 'opacity-60 hover:opacity-100'
-                  }`}
+                className={`text-xs px-2 py-1 rounded-sm transition-colors ${
+                  (responseModes[i] ?? 'field') === 'json'
+                    ? 'font-semibold'
+                    : 'opacity-60 hover:opacity-100'
+                }`}
                 style={{
                   background:
                     (responseModes[i] ?? 'field') === 'json'
@@ -218,24 +220,26 @@ export function RouteCard({ i }: RouteCardProps) {
                   color: 'var(--sea-ink-soft)',
                 }}
               >
-                <strong className="font-semibold">
-                  When to use Fields:
-                </strong>{' '}
-                Use fields to build complex nested structures — objects
-                within objects, arrays of objects, or any combination.
-                Keys only matter inside objects; arrays use indexed
-                positions. Use <strong>Generate</strong> on an array to
-                quickly create several copies with auto-generated faker
-                data.
+                <strong className="font-semibold">When to use Fields:</strong>{' '}
+                Use fields to build complex nested structures — objects within
+                objects, arrays of objects, or any combination. Keys only matter
+                inside objects; arrays use indexed positions. Use{' '}
+                <strong>Generate</strong> on an array to quickly create several
+                copies with auto-generated faker data.
               </div>
               <div
                 className="text-xs leading-relaxed p-3 rounded-lg mt-2"
                 style={{
-                  background: 'color-mix(in srgb, var(--lagoon) 10%, transparent)',
+                  background:
+                    'color-mix(in srgb, var(--lagoon) 10%, transparent)',
                   color: 'var(--sea-ink-soft)',
                 }}
               >
-                <strong className="font-semibold">Faker Variables:</strong> You can use templates like <code>{`{{name.firstName}}`}</code>, <code>{`{{internet.email}}`}</code>, <code>{`{{internet.uuid}}`}</code> in string values to generate dynamic data on every request!
+                <strong className="font-semibold">Faker Variables:</strong> You
+                can use templates like <code>{`{{name.firstName}}`}</code>,{' '}
+                <code>{`{{internet.email}}`}</code>,{' '}
+                <code>{`{{internet.uuid}}`}</code> in string values to generate
+                dynamic data on every request!
               </div>
               {route.body.trim() && (
                 <details className="mt-2">
@@ -246,7 +250,9 @@ export function RouteCard({ i }: RouteCardProps) {
                     Preview JSON
                   </summary>
                   <CodeWindow className="mt-2" title="Preview">
-                    <pre><code>{route.body}</code></pre>
+                    <pre>
+                      <code>{route.body}</code>
+                    </pre>
                   </CodeWindow>
                 </details>
               )}
@@ -274,17 +280,28 @@ export function RouteCard({ i }: RouteCardProps) {
 
                 return (
                   <div
-                    className={`text-xs p-3 rounded-lg flex items-start gap-2.5 border ${valid
-                      ? 'bg-green-500/10 border-green-500/20 text-green-700 dark:text-green-400'
-                      : 'bg-red-500/10 border-red-500/20 text-red-700 dark:text-red-400'
-                      }`}
+                    className={`text-xs p-3 rounded-lg flex items-start gap-2.5 border ${
+                      valid
+                        ? 'bg-green-500/10 border-green-500/20 text-green-700 dark:text-green-400'
+                        : 'bg-red-500/10 border-red-500/20 text-red-700 dark:text-red-400'
+                    }`}
                   >
                     <span className="mt-0.5 shrink-0">
-                      {valid ? <CheckCircle2 className="size-4 text-green-600 dark:text-green-400" /> : <XCircle className="size-4 text-red-600 dark:text-red-400" />}
+                      {valid ? (
+                        <CheckCircle2 className="size-4 text-green-600 dark:text-green-400" />
+                      ) : (
+                        <XCircle className="size-4 text-red-600 dark:text-red-400" />
+                      )}
                     </span>
                     <div className="flex flex-col">
-                      <span className="font-semibold">{valid ? 'Valid JSON' : 'Invalid JSON Syntax'}</span>
-                      {!valid && <span className="font-mono mt-1 opacity-80 break-all">{error}</span>}
+                      <span className="font-semibold">
+                        {valid ? 'Valid JSON' : 'Invalid JSON Syntax'}
+                      </span>
+                      {!valid && (
+                        <span className="font-mono mt-1 opacity-80 break-all">
+                          {error}
+                        </span>
+                      )}
                     </div>
                   </div>
                 )
@@ -298,10 +315,7 @@ export function RouteCard({ i }: RouteCardProps) {
                     const formatted = formatJson(route.body)
                     if (formatted !== route.body) {
                       updateRoute(i, 'body', formatted)
-                    } else if (
-                      route.body.trim() &&
-                      formatted === route.body
-                    ) {
+                    } else if (route.body.trim() && formatted === route.body) {
                       try {
                         JSON.parse(route.body)
                       } catch {
@@ -316,11 +330,16 @@ export function RouteCard({ i }: RouteCardProps) {
               <div
                 className="text-xs leading-relaxed p-3 rounded-lg mt-2"
                 style={{
-                  background: 'color-mix(in srgb, var(--lagoon) 10%, transparent)',
+                  background:
+                    'color-mix(in srgb, var(--lagoon) 10%, transparent)',
                   color: 'var(--sea-ink-soft)',
                 }}
               >
-                <strong className="font-semibold">Faker Variables:</strong> You can use templates like <code>{`{{name.firstName}}`}</code>, <code>{`{{internet.email}}`}</code>, <code>{`{{internet.uuid}}`}</code> in string values to generate dynamic data on every request!
+                <strong className="font-semibold">Faker Variables:</strong> You
+                can use templates like <code>{`{{name.firstName}}`}</code>,{' '}
+                <code>{`{{internet.email}}`}</code>,{' '}
+                <code>{`{{internet.uuid}}`}</code> in string values to generate
+                dynamic data on every request!
               </div>
             </div>
           )}

@@ -23,7 +23,11 @@ interface CreateState {
   result: MockUploadResult | null
   submitting: boolean
 
-  updateRoute: (i: number, field: keyof RouteFormInput, value: string | number) => void
+  updateRoute: (
+    i: number,
+    field: keyof RouteFormInput,
+    value: string | number,
+  ) => void
   updateFieldTree: (i: number, nodes: FieldNode[]) => void
   setResponseMode: (index: number, mode: 'field' | 'json') => void
   addRoute: () => void
@@ -118,10 +122,14 @@ export const useCreateStore = create<CreateState>((set, get) => ({
     set((state) => {
       const nextRoutes = [...state.routes]
       nextRoutes.splice(i + 1, 0, { ...state.routes[i] })
-      
+
       const nextFieldTrees = [...state.fieldTrees]
-      nextFieldTrees.splice(i + 1, 0, JSON.parse(JSON.stringify(state.fieldTrees[i])))
-      
+      nextFieldTrees.splice(
+        i + 1,
+        0,
+        JSON.parse(JSON.stringify(state.fieldTrees[i])),
+      )
+
       const nextResponseModes = [...state.responseModes]
       nextResponseModes.splice(i + 1, 0, state.responseModes[i])
 
@@ -180,5 +188,5 @@ export const useCreateStore = create<CreateState>((set, get) => ({
       responseModes: ['field'],
       result: null,
     })
-  }
+  },
 }))

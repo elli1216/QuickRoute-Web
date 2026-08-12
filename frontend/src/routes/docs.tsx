@@ -35,11 +35,18 @@ function DocsPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <p className="text-base leading-relaxed" style={{ color: 'var(--sea-ink-soft)' }}>
+                  <p
+                    className="text-base leading-relaxed"
+                    style={{ color: 'var(--sea-ink-soft)' }}
+                  >
                     {step.description}
                   </p>
                   <ScreenWindow title="quickroute.dev/create">
-                    <img src={step.imageSrc} alt={step.imageAlt} className="w-full h-auto object-cover" />
+                    <img
+                      src={step.imageSrc}
+                      alt={step.imageAlt}
+                      className="w-full h-auto object-cover"
+                    />
                   </ScreenWindow>
                 </CardContent>
               </Card>
@@ -53,7 +60,10 @@ function DocsPage() {
             Dynamic Data (Faker Variables)
           </h2>
           <p className="text-sm" style={{ color: 'var(--sea-ink-soft)' }}>
-            Instead of hardcoding static strings, you can use these double-bracket variables in your JSON response bodies. The server will automatically generate random, realistic data every time the endpoint is called!
+            Instead of hardcoding static strings, you can use these
+            double-bracket variables in your JSON response bodies. The server
+            will automatically generate random, realistic data every time the
+            endpoint is called!
           </p>
         </div>
 
@@ -66,9 +76,19 @@ function DocsPage() {
               <CardContent>
                 <div className="space-y-3">
                   {cat.items.map((item, j) => (
-                    <div key={j} className="flex justify-between items-center text-sm border-b border-(--line) pb-2 last:border-0 last:pb-0">
-                      <code className="bg-(--surface-strong) px-2 py-1 rounded font-semibold text-(--lagoon)">{item.variable}</code>
-                      <span className="text-xs" style={{ color: 'var(--sea-ink-soft)' }}>e.g., {item.example}</span>
+                    <div
+                      key={j}
+                      className="flex justify-between items-center text-sm border-b border-(--line) pb-2 last:border-0 last:pb-0"
+                    >
+                      <code className="bg-(--surface-strong) px-2 py-1 rounded font-semibold text-(--lagoon)">
+                        {item.variable}
+                      </code>
+                      <span
+                        className="text-xs"
+                        style={{ color: 'var(--sea-ink-soft)' }}
+                      >
+                        e.g., {item.example}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -85,15 +105,23 @@ function DocsPage() {
         <div className="grid md:grid-cols-2 gap-6">
           <Card className="card-glass">
             <CardHeader>
-              <CardTitle className="text-lg">Authentication Enforcement</CardTitle>
+              <CardTitle className="text-lg">
+                Authentication Enforcement
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm leading-relaxed mb-3" style={{ color: 'var(--sea-ink-soft)' }}>
-                You can secure your mock endpoints by requiring an API Key or a Bearer Token.
+              <p
+                className="text-sm leading-relaxed mb-3"
+                style={{ color: 'var(--sea-ink-soft)' }}
+              >
+                You can secure your mock endpoints by requiring an API Key or a
+                Bearer Token.
               </p>
               <CodeWindow title="Terminal">
-                <pre><code>{`curl -H "Authorization: Bearer secret123" \\
-  https://.../mock/abc/users`}</code></pre>
+                <pre>
+                  <code>{`curl -H "Authorization: Bearer secret123" \\
+  https://.../mock/abc/users`}</code>
+                </pre>
               </CodeWindow>
             </CardContent>
           </Card>
@@ -103,15 +131,22 @@ function DocsPage() {
               <CardTitle className="text-lg">Path Variables</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm leading-relaxed mb-3" style={{ color: 'var(--sea-ink-soft)' }}>
-                Define a route like <code>/users/:id</code>, and include <code>:id</code> in your response body. The server will dynamically replace it with whatever was in the URL.
+              <p
+                className="text-sm leading-relaxed mb-3"
+                style={{ color: 'var(--sea-ink-soft)' }}
+              >
+                Define a route like <code>/users/:id</code>, and include{' '}
+                <code>:id</code> in your response body. The server will
+                dynamically replace it with whatever was in the URL.
               </p>
               <CodeWindow title="JSON Response">
-                <pre><code>{`// GET /users/99
+                <pre>
+                  <code>{`// GET /users/99
 {
   "id": "99",
   "name": "{{name.firstName}}"
-}`}</code></pre>
+}`}</code>
+                </pre>
               </CodeWindow>
             </CardContent>
           </Card>

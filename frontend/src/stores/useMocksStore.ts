@@ -11,7 +11,7 @@ interface MocksState {
   allMocks: MockSummary[]
   allMocksLoading: boolean
   allMocksError: string | null
-  
+
   setLookupId: (id: string) => void
   handleLookup: (id: string) => Promise<void>
   handleDelete: (id: string) => Promise<void>
@@ -63,12 +63,12 @@ export const useMocksStore = create<MocksState>((set, get) => ({
       await deleteMock(idToDelete)
       removeSavedId(idToDelete)
       toast.success('Mock deleted')
-      
+
       const state = get()
       if (state.mock?.mockId === idToDelete) {
         set({ mock: null, lookupId: '' })
       }
-      
+
       await state.fetchAllMocks()
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Delete failed')
@@ -81,12 +81,18 @@ export const useMocksStore = create<MocksState>((set, get) => ({
     set({ allMocksLoading: true, allMocksError: null })
     try {
       const result = await listMocks()
-      const sorted = Object.values(result).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      const sorted = Object.values(result).sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      )
       set({ allMocks: sorted })
     } catch (err) {
-      set({ allMocksError: err instanceof Error ? err.message : 'Failed to fetch mocks' })
+      set({
+        allMocksError:
+          err instanceof Error ? err.message : 'Failed to fetch mocks',
+      })
     } finally {
       set({ allMocksLoading: false })
     }
-  }
+  },
 }))

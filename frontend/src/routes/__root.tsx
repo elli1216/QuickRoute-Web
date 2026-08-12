@@ -50,10 +50,13 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <nav
-            className="page-wrap flex items-center gap-4 md:gap-6 py-3 md:py-4 px-6 md:px-8 sticky top-4 z-50 island-shell mt-4"
-          >
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <nav className="page-wrap flex items-center gap-4 md:gap-6 py-3 md:py-4 px-6 md:px-8 sticky top-4 z-50 island-shell mt-4">
             <Link
               to="/"
               className="nav-link flex items-center gap-2"
