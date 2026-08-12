@@ -187,6 +187,14 @@ REST endpoints to upload new mock definitions (optional `expiresInHours` query p
 
 The server starts on `http://localhost:8080` using the embedded H2 database (dev profile by default).
 
+### Testing
+
+```bash
+./mvnw test
+```
+
+![Test Results](./pictures/test_results.png)
+
 ### Running with PostgreSQL
 
 ```bash
