@@ -9,7 +9,30 @@ import { MockCard } from '#/components/mock-card'
 import { MocksTable } from '#/components/mocks-table'
 import { FolderX } from 'lucide-react'
 
-export const Route = createFileRoute('/mocks')({ component: MyMocks })
+export const Route = createFileRoute('/mocks')({
+  head: () => ({
+    meta: [
+      {
+        title: 'Manage & Test Mock APIs — Live Endpoints | QuickRoute',
+      },
+      {
+        name: 'description',
+        content:
+          'Search, test, and manage your active mock API endpoints. Inspect route methods, response payloads, and expiration times on your live mock servers.',
+      },
+      {
+        property: 'og:title',
+        content: 'Manage & Test Mock APIs — Live Endpoints | QuickRoute',
+      },
+      {
+        property: 'og:description',
+        content:
+          'Search, test, and manage your active mock API endpoints. Inspect route methods, response payloads, and expiration times.',
+      },
+    ],
+  }),
+  component: MyMocks,
+})
 
 function loadSavedMockIds(): string[] {
   try {

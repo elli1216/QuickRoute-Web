@@ -4,7 +4,30 @@ import { CodeWindow } from '#/components/ui/code-window'
 import { StatsChart } from '#/components/ui/stats-chart'
 import { VideoTutorialHeroCard } from '#/components/video-tutorial'
 
-export const Route = createFileRoute('/')({ component: Home })
+export const Route = createFileRoute('/')({
+  head: () => ({
+    meta: [
+      {
+        title: 'Free API Mocking Server | Instant REST API Mock | QuickRoute',
+      },
+      {
+        name: 'description',
+        content:
+          'Create instant, free API mocks in seconds with zero signup. Visual route builder, dynamic Faker JSON generation, custom delays, and auth support. Try it now! ✓',
+      },
+      {
+        property: 'og:title',
+        content: 'Free API Mocking Server | Instant REST API Mock | QuickRoute',
+      },
+      {
+        property: 'og:description',
+        content:
+          'Create instant, free API mocks in seconds with zero signup. Visual route builder, dynamic Faker JSON generation, custom latency delays, and auth support.',
+      },
+    ],
+  }),
+  component: Home,
+})
 
 function Home() {
   return (

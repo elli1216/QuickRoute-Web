@@ -21,6 +21,27 @@ import { fakerCategories } from '#/constants'
 import { TUTORIALS } from '#/constants/tutorials'
 
 export const Route = createFileRoute('/docs')({
+  head: () => ({
+    meta: [
+      {
+        title: 'API Mocking Documentation & Tutorials | QuickRoute Docs',
+      },
+      {
+        name: 'description',
+        content:
+          'Learn how to mock REST APIs, generate dynamic JSON with Faker variables, configure authentication, and use path variables in QuickRoute. Read the full guide ✓',
+      },
+      {
+        property: 'og:title',
+        content: 'API Mocking Documentation & Tutorials | QuickRoute Docs',
+      },
+      {
+        property: 'og:description',
+        content:
+          'Learn how to mock REST APIs, generate dynamic JSON with Faker variables, configure authentication, and use path variables in QuickRoute.',
+      },
+    ],
+  }),
   component: DocsPage,
 })
 
@@ -146,7 +167,9 @@ function DocsPage() {
   // Find active section title for mobile bar
   const currentNav =
     DOC_SECTIONS.find((s) => s.id === activeSection) ||
-    DOC_SECTIONS.flatMap((s) => s.children || []).find((c) => c.id === activeSection) ||
+    DOC_SECTIONS.flatMap((s) => s.children || []).find(
+      (c) => c.id === activeSection,
+    ) ||
     DOC_SECTIONS[0]
 
   return (
@@ -182,7 +205,6 @@ function DocsPage() {
 
       {/* Main Grid: Sidebar + Content */}
       <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] xl:grid-cols-[280px_1fr] gap-8 lg:gap-12 items-start">
-        
         {/* Desktop Sticky Sidebar */}
         <aside className="hidden lg:block sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto pr-2 space-y-6">
           <div className="island-shell p-4 rounded-2xl space-y-5 backdrop-blur-xl">
@@ -266,7 +288,6 @@ function DocsPage() {
 
         {/* Documentation Content Column */}
         <div className="min-w-0 space-y-16">
-          
           {/* Tutorials from constant */}
           {TUTORIALS.map((tutorial, i) => {
             const sectionId = `tutorial-${i}`
@@ -292,11 +313,7 @@ function DocsPage() {
                   {tutorial.steps.map((step, index) => {
                     const stepId = `${sectionId}-step-${index + 1}`
                     return (
-                      <div
-                        key={index}
-                        id={stepId}
-                        className="scroll-mt-28"
-                      >
+                      <div key={index} id={stepId} className="scroll-mt-28">
                         <Card className="card-glass shadow-sm hover:shadow-md transition-shadow">
                           <CardHeader>
                             <CardTitle className="text-lg md:text-xl flex items-center gap-3">
@@ -332,10 +349,7 @@ function DocsPage() {
           })}
 
           {/* Dynamic Data (Faker Variables) */}
-          <section
-            id="faker-variables"
-            className="scroll-mt-28 space-y-8"
-          >
+          <section id="faker-variables" className="scroll-mt-28 space-y-8">
             <div className="space-y-3 border-b border-(--line) pb-4">
               <div className="flex items-center gap-2">
                 <span className="island-kicker text-xs bg-pink-500/10 text-pink-500">
@@ -356,9 +370,13 @@ function DocsPage() {
                 className="text-sm md:text-base leading-relaxed font-medium"
                 style={{ color: 'var(--sea-ink-soft)' }}
               >
-                Instead of hardcoding static values, use double-bracket template tags (e.g.,{' '}
-                <code className="text-blue-500 font-bold">{`{{name.fullName}}`}</code>,{' '}
-                <code className="text-blue-500 font-bold">{`{{internet.email}}`}</code>) in your JSON response bodies. The server generates fresh, realistic data on every incoming API request!
+                Instead of hardcoding static values, use double-bracket template
+                tags (e.g.,{' '}
+                <code className="text-blue-500 font-bold">{`{{name.fullName}}`}</code>
+                ,{' '}
+                <code className="text-blue-500 font-bold">{`{{internet.email}}`}</code>
+                ) in your JSON response bodies. The server generates fresh,
+                realistic data on every incoming API request!
               </p>
 
               {/* Quick Search for Faker tags */}
@@ -417,10 +435,7 @@ function DocsPage() {
           </section>
 
           {/* Advanced Features */}
-          <section
-            id="advanced-features"
-            className="scroll-mt-28 space-y-8"
-          >
+          <section id="advanced-features" className="scroll-mt-28 space-y-8">
             <div className="space-y-2 border-b border-(--line) pb-4">
               <div className="flex items-center gap-2">
                 <span className="island-kicker text-xs bg-emerald-500/10 text-emerald-500">
@@ -440,7 +455,6 @@ function DocsPage() {
             </div>
 
             <div className="grid md:grid-cols-2 gap-6">
-              
               {/* Authentication Enforcement */}
               <div id="auth-enforcement" className="scroll-mt-28 flex">
                 <Card className="card-glass flex flex-col w-full">
@@ -455,7 +469,10 @@ function DocsPage() {
                       className="text-sm leading-relaxed font-medium"
                       style={{ color: 'var(--sea-ink-soft)' }}
                     >
-                      Secure your mock endpoints by enforcing an <code>API_KEY</code> header or a <code>BEARER</code> token. Requests missing the specified token immediately receive a <code>401 Unauthorized</code> response.
+                      Secure your mock endpoints by enforcing an{' '}
+                      <code>API_KEY</code> header or a <code>BEARER</code>{' '}
+                      token. Requests missing the specified token immediately
+                      receive a <code>401 Unauthorized</code> response.
                     </p>
                     <CodeWindow title="Terminal / curl">
                       <pre>
@@ -481,7 +498,9 @@ function DocsPage() {
                       className="text-sm leading-relaxed font-medium"
                       style={{ color: 'var(--sea-ink-soft)' }}
                     >
-                      Define dynamic URL parameters like <code>/users/:id</code>. Use <code>:id</code> anywhere inside your response body to echo back whatever was passed in the request path!
+                      Define dynamic URL parameters like <code>/users/:id</code>
+                      . Use <code>:id</code> anywhere inside your response body
+                      to echo back whatever was passed in the request path!
                     </p>
                     <CodeWindow title="JSON Response Template">
                       <pre>
@@ -496,10 +515,8 @@ function DocsPage() {
                   </CardContent>
                 </Card>
               </div>
-
             </div>
           </section>
-
         </div>
       </div>
 

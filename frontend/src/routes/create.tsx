@@ -8,7 +8,30 @@ import { useCreateStore } from '#/stores/useCreateStore'
 import { MockResult } from '#/components/create/MockResult'
 import { RouteCard } from '#/components/create/RouteCard'
 
-export const Route = createFileRoute('/create')({ component: CreateMock })
+export const Route = createFileRoute('/create')({
+  head: () => ({
+    meta: [
+      {
+        title: 'Create Free API Mock — Visual Route Builder | QuickRoute',
+      },
+      {
+        name: 'description',
+        content:
+          'Design custom REST endpoints with visual JSON schemas, HTTP methods, simulated response delays, and Bearer token auth. Deploy live mock URLs instantly! ✓',
+      },
+      {
+        property: 'og:title',
+        content: 'Create Free API Mock — Visual Route Builder | QuickRoute',
+      },
+      {
+        property: 'og:description',
+        content:
+          'Design custom REST endpoints with visual JSON schemas, HTTP methods, simulated response delays, and Bearer token auth.',
+      },
+    ],
+  }),
+  component: CreateMock,
+})
 
 function CreateMock() {
   const routes = useCreateStore((state) => state.routes)
