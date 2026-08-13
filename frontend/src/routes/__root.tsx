@@ -82,6 +82,10 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
           'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
       },
       {
+        name: 'google-site-verification',
+        content: 'WPuTqSBd8oq5jvwazVcEg5XAda675GgoM-srkMDCxZE',
+      },
+      {
         name: 'theme-color',
         content: '#3b82f6',
       },
