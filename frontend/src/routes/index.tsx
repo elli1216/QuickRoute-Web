@@ -2,6 +2,7 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { features, steps } from '#/lib/landing'
 import { CodeWindow } from '#/components/ui/code-window'
 import { StatsChart } from '#/components/ui/stats-chart'
+import { VideoTutorialHeroCard } from '#/components/video-tutorial'
 
 export const Route = createFileRoute('/')({ component: Home })
 
@@ -43,6 +44,9 @@ function Home() {
               Documentation
             </Link>
           </div>
+
+          {/* Video Tutorial Card */}
+          <VideoTutorialHeroCard youtubeUrl="https://youtu.be/upC8RBv_kus?si=yrFW3Yn7azfwBZMg" />
         </div>
       </section>
 
