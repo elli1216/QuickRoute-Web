@@ -2,7 +2,6 @@ import {
   HeadContent,
   Scripts,
   createRootRouteWithContext,
-  Link,
 } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
@@ -13,7 +12,8 @@ import appCss from '../styles.css?url'
 
 import type { QueryClient } from '@tanstack/react-query'
 import { ThemeProvider } from '#/components/theme-provider'
-import { ModeToggle } from '#/components/mode-toggle'
+import { SiteHeader } from '#/components/site-header'
+import { SiteFooter } from '#/components/site-footer'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -56,46 +56,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           enableSystem
           disableTransitionOnChange
         >
-          <nav className="page-wrap flex items-center gap-4 md:gap-6 py-3 md:py-4 px-6 md:px-8 sticky top-4 z-50 island-shell mt-4">
-            <Link
-              to="/"
-              className="nav-link flex items-center gap-2"
-              activeProps={{
-                className: 'nav-link is-active flex items-center gap-2',
-              }}
-            >
-              <img
-                src="/main-logo.svg"
-                alt="QuickRoute"
-                className="size-10 w-auto"
-              />
-            </Link>
-            <Link
-              to="/docs"
-              className="nav-link"
-              activeProps={{ className: 'nav-link is-active' }}
-            >
-              Docs
-            </Link>
-            <Link
-              to="/create"
-              className="nav-link"
-              activeProps={{ className: 'nav-link is-active' }}
-            >
-              Create
-            </Link>
-            <Link
-              to="/mocks"
-              className="nav-link"
-              activeProps={{ className: 'nav-link is-active' }}
-            >
-              Mocks
-            </Link>
-            <div className="ml-auto flex items-center">
-              <ModeToggle />
-            </div>
-          </nav>
-          <main>{children}</main>
+          <div className="min-h-screen flex flex-col justify-between">
+            <SiteHeader />
+            <main className="flex-1">{children}</main>
+            <SiteFooter />
+          </div>
           <TanStackDevtools
             config={{
               position: 'bottom-right',

@@ -267,16 +267,6 @@ function Home() {
           </Link>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer
-        className="site-footer py-10 mt-10 text-center text-sm border-t border-black/5 dark:border-white/5"
-        style={{ color: 'var(--sea-ink-soft)' }}
-      >
-        <p className="font-medium">
-          QuickRoute &mdash; Free and open source API mocking.
-        </p>
-      </footer>
     </div>
   )
 }
