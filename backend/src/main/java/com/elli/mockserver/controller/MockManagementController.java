@@ -79,17 +79,6 @@ public class MockManagementController {
                         .toList()));
     }
 
-    @DeleteMapping("/mock/{mockId}")
-    public ResponseEntity<Void> deleteMock(@PathVariable String mockId) {
-        List<RouteDefinition> routes = registry.getRoutes(mockId);
-        if (routes.isEmpty()) {
-            throw new MockNotFoundException(mockId);
-        }
-        routes.forEach(route -> routeRegistrar.unregisterRoute(mockId, route));
-        registry.removeMock(mockId);
-        return ResponseEntity.noContent().build();
-    }
-
     private List<RouteDefinition> parseDefinition(Map<String, RouteConfigDto> definition) {
         List<RouteDefinition> routes = new ArrayList<>();
         for (var entry : definition.entrySet()) {
