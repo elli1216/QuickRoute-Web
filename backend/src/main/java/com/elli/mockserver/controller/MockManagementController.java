@@ -62,8 +62,14 @@ public class MockManagementController {
                     config.getCreatedAt(),
                     config.getExpiresAt(),
                     config.getRoutes().stream()
-                            .map(r -> new RouteResponseDto(r.getMethod(), r.getPathPattern(), r.getStatusCode(),
-                                    r.getDelayMs()))
+                            .map(r -> new RouteResponseDto(
+                                    r.getMethod(),
+                                    r.getPathPattern(),
+                                    r.getStatusCode(),
+                                    r.getDelayMs(),
+                                    r.getResponseBody(),
+                                    r.getAuthType() != null ? r.getAuthType().name() : null,
+                                    r.getExpectedToken()))
                             .toList()));
         }
         return ResponseEntity.ok(result);
@@ -81,8 +87,14 @@ public class MockManagementController {
                 config.getCreatedAt(),
                 config.getExpiresAt(),
                 config.getRoutes().stream()
-                        .map(r -> new RouteResponseDto(r.getMethod(), r.getPathPattern(), r.getStatusCode(),
-                                r.getDelayMs()))
+                        .map(r -> new RouteResponseDto(
+                                r.getMethod(),
+                                r.getPathPattern(),
+                                r.getStatusCode(),
+                                r.getDelayMs(),
+                                r.getResponseBody(),
+                                r.getAuthType() != null ? r.getAuthType().name() : null,
+                                r.getExpectedToken()))
                         .toList()));
     }
 
