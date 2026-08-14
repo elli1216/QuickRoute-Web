@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useRouterState } from '@tanstack/react-router'
-import { Menu, X, BookOpen, Code2, Layers, Home, Plus, Sparkles } from 'lucide-react'
+import { Menu, X, BookOpen, Layers, Home, Plus, Sparkles } from 'lucide-react'
 import { ModeToggle } from '#/components/mode-toggle'
 
 export function SiteHeader() {
@@ -27,7 +27,6 @@ export function SiteHeader() {
   return (
     <header className="sticky top-3 md:top-4 z-50 px-3 md:px-0">
       <div className="page-wrap island-shell py-2.5 md:py-3 px-4 md:px-6 flex items-center justify-between shadow-lg shadow-black/5 backdrop-blur-xl relative">
-        
         {/* Brand / Logo */}
         <Link
           to="/"
@@ -40,35 +39,27 @@ export function SiteHeader() {
           />
         </Link>
 
-        {/* Desktop Navigation Links */}
-        <nav className="hidden md:flex items-center gap-1.5">
-          <Link
-            to="/"
-            className="nav-link text-sm font-semibold flex items-center gap-1.5 px-3 py-1.5 rounded-lg"
-            activeProps={{ className: 'nav-link is-active' }}
-          >
-            Home
-          </Link>
-          <Link
-            to="/docs"
-            className="nav-link text-sm font-semibold flex items-center gap-1.5 px-3 py-1.5 rounded-lg"
-            activeProps={{ className: 'nav-link is-active' }}
-          >
-            <BookOpen className="w-4 h-4 opacity-70" />
-            Docs
-          </Link>
-          <Link
-            to="/mocks"
-            className="nav-link text-sm font-semibold flex items-center gap-1.5 px-3 py-1.5 rounded-lg"
-            activeProps={{ className: 'nav-link is-active' }}
-          >
-            <Layers className="w-4 h-4 opacity-70" />
-            Mocks
-          </Link>
-        </nav>
-
         {/* Right Action Controls */}
         <div className="flex items-center gap-2">
+          <div className="hidden lg:flex">
+            <Link
+              to="/docs"
+              className="nav-link text-sm font-semibold flex items-center gap-1.5 px-3 py-1.5 rounded-lg"
+              activeProps={{ className: 'nav-link is-active' }}
+            >
+              Docs
+            </Link>
+            <Link
+              to="/mocks"
+              className="nav-link text-sm font-semibold flex items-center gap-1.5 px-3 py-1.5 rounded-lg"
+              activeProps={{ className: 'nav-link is-active' }}
+            >
+              Mocks
+            </Link>
+          </div>
+          {/* Theme Toggle */}
+          <ModeToggle />
+
           {/* Quick CTA on desktop */}
           <Link
             to="/create"
@@ -78,8 +69,6 @@ export function SiteHeader() {
             <span>New Mock</span>
           </Link>
 
-          {/* Theme Toggle */}
-          <ModeToggle />
 
           {/* Mobile Hamburger Menu Button */}
           <button
@@ -140,7 +129,7 @@ export function SiteHeader() {
                 }}
               >
                 <Layers className="w-4 h-4" />
-                <span>My Mocks</span>
+                <span>Mocks</span>
               </Link>
             </div>
 
@@ -155,7 +144,6 @@ export function SiteHeader() {
                 <span>Start Mocking Now</span>
               </Link>
             </div>
-
           </div>
         </div>
       )}

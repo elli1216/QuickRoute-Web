@@ -34,7 +34,7 @@ export function ScreenWindow({
         </div>
 
         {/* URL Bar */}
-        <div className="flex-1 flex justify-center">
+        <div className="flex-1 flex justify-center min-w-0 mx-8">
           <div
             className="px-6 py-1 rounded-md text-xs font-medium max-w-xs w-full text-center truncate shadow-inner flex items-center justify-center gap-2"
             style={{

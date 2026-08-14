@@ -35,10 +35,10 @@ export function CodeWindow({
         </div>
         {title && (
           <div
-            className="ml-4 flex items-center gap-2 text-xs font-mono font-medium opacity-90"
+            className="ml-4 flex items-center gap-2 text-xs font-mono font-medium opacity-90 min-w-0 truncate"
             style={{ color: 'var(--foam)' }}
           >
-            {title}
+            <span className="truncate">{title}</span>
           </div>
         )}
       </div>

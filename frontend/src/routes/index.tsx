@@ -40,16 +40,13 @@ function Home() {
             alt="QuickRoute"
             className="h-32 w-64 md:h-48 md:w-96 mx-auto drop-shadow-xl"
           />
-          <p
-            className="text-lg md:text-2xl mt-6 max-w-2xl mx-auto px-4 font-medium"
-            style={{ color: 'var(--sea-ink-soft)' }}
-          >
-            Instant API mocks in seconds.
-            <br />
-            <span className="bg-clip-text text-transparent bg-linear-to-r from-blue-600 to-indigo-500 dark:from-blue-400 dark:to-indigo-300 font-bold">
-              No sign-up, no setup, no cost.
-            </span>
-          </p>
+          <h1 className="text-3xl md:text-4xl font-bold max-w-4xl mx-auto text-foreground tracking-tight">
+              Free{' '}
+            <span className="bg-clip-text text-transparent bg-linear-to-r from-blue-600 to-indigo-500 dark:from-blue-400 dark:to-indigo-300">
+              API Mocking Tool
+            </span>{' '}
+            for Developers
+          </h1>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10 md:mt-12">
             <Link
               to="/create"
@@ -116,6 +113,59 @@ function Home() {
               </p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Use Cases - SEO Depth */}
+      <section className="page-wrap py-16 md:py-24 relative z-10 bg-black/5 dark:bg-white/5 rounded-3xl my-8 md:my-16">
+        <div className="text-center">
+          <h2 className="display-title text-3xl md:text-5xl font-bold px-4">
+            Who is this for?
+          </h2>
+          <div className="w-16 h-1 rounded-full bg-linear-to-r from-blue-500 to-indigo-500 mx-auto mt-4" />
+          <p
+            className="mt-4 px-4 text-lg font-medium max-w-2xl mx-auto"
+            style={{ color: 'var(--sea-ink-soft)' }}
+          >
+            A lightweight, free API mocking tool built specifically for modern
+            development workflows.
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-6 md:gap-8 mt-12 md:mt-16 px-4 md:px-8">
+          <div className="island-shell p-8 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-white/20 dark:border-white/10">
+            <h3 className="text-xl font-bold mb-3">Frontend Developers</h3>
+            <p
+              className="text-sm font-medium leading-relaxed"
+              style={{ color: 'var(--sea-ink-soft)' }}
+            >
+              Don't wait for the backend team. Build out your UI components
+              immediately by generating realistic mock JSON data to simulate the
+              exact payloads you expect.
+            </p>
+          </div>
+          <div className="island-shell p-8 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-white/20 dark:border-white/10">
+            <h3 className="text-xl font-bold mb-3">QA & Testing</h3>
+            <p
+              className="text-sm font-medium leading-relaxed"
+              style={{ color: 'var(--sea-ink-soft)' }}
+            >
+              Simulate high-latency API responses, 500 server errors, and
+              missing data edge cases effortlessly. Validate your application's
+              loading states and error handling.
+            </p>
+          </div>
+          <div className="island-shell p-8 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-white/20 dark:border-white/10">
+            <h3 className="text-xl font-bold mb-3">Rapid Prototyping</h3>
+            <p
+              className="text-sm font-medium leading-relaxed"
+              style={{ color: 'var(--sea-ink-soft)' }}
+            >
+              Need to show a working demo to a client? Quickly spin up a fake
+              REST API endpoint with dynamic Faker variables to make your
+              prototypes feel real and alive.
+            </p>
+          </div>
         </div>
       </section>
 
