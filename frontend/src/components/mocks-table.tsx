@@ -27,8 +27,9 @@ import {
 } from '#/components/ui/dialog'
 import { buildEndpointUrl, buildCurl } from '#/lib/api'
 import type { MockSummary } from '#/lib/api'
+import { Link } from '@tanstack/react-router'
 import { Badge } from '#/components/ui/badge'
-import { Key, Copy, Check } from 'lucide-react'
+import { Key, Copy, Check, Activity } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface MocksTableProps {
@@ -109,6 +110,23 @@ export function MocksTable({ data }: MocksTableProps) {
       cell: ({ row }) => {
         const d = new Date(row.getValue('expiresAt'))
         return <span className="opacity-70">{d.toLocaleString()}</span>
+      },
+    },
+    {
+      id: 'actions',
+      header: 'Actions',
+      cell: ({ row }) => {
+        const mock = row.original
+        return (
+          <Link
+            to="/mock/$mockId/dashboard"
+            params={{ mockId: mock.mockId }}
+            className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-md bg-(--lagoon)/10 text-(--lagoon) hover:bg-(--lagoon)/20 transition-colors"
+          >
+            <Activity className="w-3.5 h-3.5" />
+            <span>Inspector</span>
+          </Link>
+        )
       },
     },
   ]
@@ -222,14 +240,26 @@ export function MocksTable({ data }: MocksTableProps) {
         onOpenChange={(open) => !open && setSelectedMock(null)}
       >
         <DialogContent className="w-[95vw] sm:max-w-xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 font-mono text-lg">
-              Mock:{' '}
-              <span className="text-(--lagoon)">{selectedMock?.mockId}</span>
-            </DialogTitle>
-            <DialogDescription>
-              Configured routes and endpoints for this mock server.
-            </DialogDescription>
+          <DialogHeader className="flex flex-row items-center justify-between gap-4">
+            <div>
+              <DialogTitle className="flex items-center gap-2 font-mono text-lg">
+                Mock:{' '}
+                <span className="text-(--lagoon)">{selectedMock?.mockId}</span>
+              </DialogTitle>
+              <DialogDescription>
+                Configured routes and endpoints for this mock server.
+              </DialogDescription>
+            </div>
+            {selectedMock && (
+              <Link
+                to="/mock/$mockId/dashboard"
+                params={{ mockId: selectedMock.mockId }}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-(--lagoon) text-white hover:bg-(--lagoon-deep) transition-colors shrink-0 mr-6"
+              >
+                <Activity className="w-3.5 h-3.5" />
+                <span>Live Inspector</span>
+              </Link>
+            )}
           </DialogHeader>
 
           <div className="space-y-4 mt-2">

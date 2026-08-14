@@ -41,7 +41,7 @@ function Home() {
             className="h-32 w-64 md:h-48 md:w-96 mx-auto drop-shadow-xl"
           />
           <h1 className="text-3xl md:text-4xl font-bold max-w-4xl mx-auto text-foreground tracking-tight">
-              Free{' '}
+            Free{' '}
             <span className="bg-clip-text text-transparent bg-linear-to-r from-blue-600 to-indigo-500 dark:from-blue-400 dark:to-indigo-300">
               API Mocking Tool
             </span>{' '}

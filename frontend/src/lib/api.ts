@@ -33,6 +33,7 @@ export interface MockSummary {
     pathPattern: string
     statusCode: number
     delayMs: number
+    responseBody?: unknown
     authType?: string
     expectedToken?: string
   }>
