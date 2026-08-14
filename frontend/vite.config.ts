@@ -7,15 +7,17 @@ import viteReact from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { cloudflare } from '@cloudflare/vite-plugin'
 
-const config = defineConfig({
+export default defineConfig(({ command }) => ({
   resolve: { tsconfigPaths: true },
   plugins: [
     devtools(),
-    cloudflare({ viteEnvironment: { name: 'ssr' } }),
+    // @cloudflare/vite-plugin causes "Error: write EOF" on Windows during dev mode (command === 'serve').
+    // Enabling it only during build (command === 'build') ensures full Cloudflare production support.
+    ...(command === 'build'
+      ? [cloudflare({ viteEnvironment: { name: 'ssr' } })]
+      : []),
     tailwindcss(),
     tanstackStart(),
     viteReact(),
   ],
-})
-
-export default config
+}))
