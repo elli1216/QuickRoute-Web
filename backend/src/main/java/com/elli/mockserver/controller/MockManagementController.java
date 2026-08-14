@@ -10,23 +10,30 @@ import com.elli.mockserver.model.MockConfiguration;
 import com.elli.mockserver.model.RouteDefinition;
 import com.elli.mockserver.service.DynamicRouteRegistrar;
 import com.elli.mockserver.service.MockRegistryService;
+import com.elli.mockserver.repository.RequestLogRepository;
+import com.elli.mockserver.model.RequestLog;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 public class MockManagementController {
 
     private final DynamicRouteRegistrar routeRegistrar;
-
     private final MockRegistryService registry;
+    private final RequestLogRepository requestLogRepository;
 
-    public MockManagementController(DynamicRouteRegistrar routeRegistrar, MockRegistryService registry) {
+    public MockManagementController(DynamicRouteRegistrar routeRegistrar, MockRegistryService registry, RequestLogRepository requestLogRepository) {
         this.routeRegistrar = routeRegistrar;
         this.registry = registry;
+        this.requestLogRepository = requestLogRepository;
+    }
+
+    @GetMapping("/mock/{mockId}/logs")
+    public ResponseEntity<List<RequestLog>> getMockLogs(@PathVariable String mockId) {
+        List<RequestLog> logs = requestLogRepository.findTop20ByMockIdOrderByTimestampDesc(mockId);
+        return ResponseEntity.ok(logs);
     }
 
     @PostMapping("/mock/upload")

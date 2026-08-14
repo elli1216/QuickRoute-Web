@@ -16,13 +16,16 @@ public class MockRequestHandler {
     private final MockRegistryService registry;
     private final com.elli.mockserver.service.TemplateResolutionService templateService;
     private final com.elli.mockserver.service.StatisticsService statisticsService;
+    private final com.elli.mockserver.repository.RequestLogRepository requestLogRepository;
 
     public MockRequestHandler(MockRegistryService registry,
             com.elli.mockserver.service.TemplateResolutionService templateService,
-            com.elli.mockserver.service.StatisticsService statisticsService) {
+            com.elli.mockserver.service.StatisticsService statisticsService,
+            com.elli.mockserver.repository.RequestLogRepository requestLogRepository) {
         this.registry = registry;
         this.templateService = templateService;
         this.statisticsService = statisticsService;
+        this.requestLogRepository = requestLogRepository;
     }
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -75,6 +78,40 @@ public class MockRequestHandler {
         objectMapper.writeValue(response.getWriter(), finalBody);
 
         statisticsService.incrementRequestsServed();
+        
+        // Asynchronously save RequestLog
+        try {
+            com.elli.mockserver.model.RequestLog log = new com.elli.mockserver.model.RequestLog();
+            log.setMockId(route.getMock().getId());
+            log.setMethod(method);
+            log.setPath(requestUri);
+            log.setTimestamp(java.time.LocalDateTime.now());
+            log.setResponseStatus(route.getStatusCode());
+            
+            Map<String, String> headersMap = new java.util.HashMap<>();
+            java.util.Enumeration<String> headerNames = request.getHeaderNames();
+            while (headerNames != null && headerNames.hasMoreElements()) {
+                String headerName = headerNames.nextElement();
+                headersMap.put(headerName, request.getHeader(headerName));
+            }
+            log.setHeaders(objectMapper.writeValueAsString(headersMap));
+            
+            log.setQueryParams(objectMapper.writeValueAsString(request.getParameterMap()));
+            
+            // Note: reading body might throw if stream is closed or already read,
+            // but we try to capture it. Using request.getReader()
+            String requestBody = "";
+            try {
+                requestBody = request.getReader().lines().collect(java.util.stream.Collectors.joining("\n"));
+            } catch (Exception e) {}
+            log.setBody(requestBody);
+
+            java.util.concurrent.CompletableFuture.runAsync(() -> {
+                requestLogRepository.save(log);
+            });
+        } catch (Exception e) {
+            // ignore logging errors to prevent failing the mock response
+        }
     }
 
     private Object substitutePathVars(Object body, Map<String, String> pathVars) {

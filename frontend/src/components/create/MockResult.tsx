@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import { buildEndpointUrl, buildCurl } from '#/lib/api'
 import { useCreateStore } from '#/stores/useCreateStore'
 import { CodeWindow } from '#/components/ui/code-window'
+import { Link } from '@tanstack/react-router'
 
 export function MockResult() {
   const result = useCreateStore((state) => state.result)
@@ -144,8 +145,18 @@ export function MockResult() {
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Button onClick={resetForm}>Create Another Mock</Button>
+          <div className="flex flex-col sm:flex-row gap-3 pt-4 mt-6 border-t border-(--line)">
+            <Button asChild className="glow-button font-bold">
+              <Link
+                to="/mock/$mockId/dashboard"
+                params={{ mockId: result.mockId }}
+              >
+                Open Live Dashboard
+              </Link>
+            </Button>
+            <Button variant="outline" onClick={resetForm}>
+              Create Another Mock
+            </Button>
           </div>
         </CardContent>
       </Card>
