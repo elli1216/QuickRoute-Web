@@ -9,4 +9,8 @@ import java.util.List;
 @Repository
 public interface RequestLogRepository extends JpaRepository<RequestLog, Long> {
     List<RequestLog> findTop20ByMockIdOrderByTimestampDesc(String mockId);
+
+    List<RequestLog> findByMockIdOrderByTimestampDesc(String mockId);
+
+    void deleteByMockId(String mockId);
 }

@@ -3,6 +3,7 @@ package com.elli.mockserver.service;
 import com.elli.mockserver.model.MockConfiguration;
 import com.elli.mockserver.model.RouteDefinition;
 import com.elli.mockserver.repository.MockConfigurationRepository;
+import com.elli.mockserver.repository.RequestLogRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,7 +11,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
@@ -39,6 +39,9 @@ class MockRegistryServiceTest {
     @Mock
     private CacheManager cacheManager;
 
+    @Mock
+    private RequestLogRepository requestLogRepository;
+
     @Spy
     private RouteMatcherService routeMatcherService = new RouteMatcherService();
 
@@ -51,7 +54,7 @@ class MockRegistryServiceTest {
     @BeforeEach
     void setUp() {
         mockRegistryService = new MockRegistryService(mockRepo, routeRegistrar, routeMatcherService, cacheManager,
-                statisticsService);
+                statisticsService, requestLogRepository);
 
         routeDefinition = new RouteDefinition("GET", "/users/:id", "{\"name\":\"Test\"}", 0, 200);
         mockConfiguration = new MockConfiguration("test-mock-id", List.of(routeDefinition),

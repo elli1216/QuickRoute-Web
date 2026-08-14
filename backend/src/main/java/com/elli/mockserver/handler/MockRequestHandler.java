@@ -107,7 +107,16 @@ public class MockRequestHandler {
             log.setBody(requestBody);
 
             java.util.concurrent.CompletableFuture.runAsync(() -> {
-                requestLogRepository.save(log);
+                try {
+                    requestLogRepository.save(log);
+                    var logs = requestLogRepository.findByMockIdOrderByTimestampDesc(log.getMockId());
+                    if (logs.size() > 20) {
+                        var toDelete = logs.subList(20, logs.size());
+                        requestLogRepository.deleteAllInBatch(toDelete);
+                    }
+                } catch (Exception e) {
+                    // Ignore pruning error
+                }
             });
         } catch (Exception e) {
             // ignore logging errors to prevent failing the mock response

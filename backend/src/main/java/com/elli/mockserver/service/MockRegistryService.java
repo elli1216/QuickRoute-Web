@@ -30,17 +30,20 @@ public class MockRegistryService {
     private final RouteMatcherService routeMatcherService;
     private final CacheManager cacheManager;
     private final StatisticsService statisticsService;
+    private final com.elli.mockserver.repository.RequestLogRepository requestLogRepository;
 
     public MockRegistryService(MockConfigurationRepository mockRepo,
             @Lazy DynamicRouteRegistrar routeRegistrar,
             RouteMatcherService routeMatcherService,
             CacheManager cacheManager,
-            StatisticsService statisticsService) {
+            StatisticsService statisticsService,
+            com.elli.mockserver.repository.RequestLogRepository requestLogRepository) {
         this.mockRepo = mockRepo;
         this.routeRegistrar = routeRegistrar;
         this.routeMatcherService = routeMatcherService;
         this.cacheManager = cacheManager;
         this.statisticsService = statisticsService;
+        this.requestLogRepository = requestLogRepository;
     }
 
     @Transactional
@@ -57,6 +60,7 @@ public class MockRegistryService {
     @Transactional
     @CacheEvict(value = "mocks", key = "#mockId")
     public void removeMock(String mockId) {
+        requestLogRepository.deleteByMockId(mockId);
         mockRepo.deleteById(mockId);
     }
 
@@ -132,6 +136,7 @@ public class MockRegistryService {
                     cache.evict(mock.getId());
                 }
 
+                requestLogRepository.deleteByMockId(mock.getId());
                 mockRepo.delete(mock);
             }
         } while (page.hasNext());
