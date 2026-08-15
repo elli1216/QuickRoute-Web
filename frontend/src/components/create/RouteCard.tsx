@@ -92,7 +92,7 @@ export function RouteCard({ i }: RouteCardProps) {
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div className="space-y-1.5">
             <Label>Status</Label>
             <Select
@@ -139,6 +139,23 @@ export function RouteCard({ i }: RouteCardProps) {
                 <SelectItem value="API_KEY">API Key Header</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+          <div className="space-y-1.5">
+            <Label>Generate Array</Label>
+            <Input
+              type="number"
+              min={0}
+              placeholder="Count (e.g. 50)"
+              value={route.generateArrayCount || ''}
+              onChange={(e) =>
+                updateRoute(
+                  i,
+                  'generateArrayCount',
+                  e.target.value ? Number(e.target.value) : 0,
+                )
+              }
+              title="Treats your JSON as a single item and generates an array of this size. Supports ?page and ?limit query parameters automatically."
+            />
           </div>
         </div>
 
@@ -235,11 +252,7 @@ export function RouteCard({ i }: RouteCardProps) {
                   color: 'var(--sea-ink-soft)',
                 }}
               >
-                <strong className="font-semibold">Faker Variables:</strong> You
-                can use templates like <code>{`{{name.firstName}}`}</code>,{' '}
-                <code>{`{{internet.email}}`}</code>,{' '}
-                <code>{`{{internet.uuid}}`}</code> in string values to generate
-                dynamic data on every request!
+                <strong className="font-semibold">Dynamic Variables:</strong> Use <code>{`{{name.firstName}}`}</code> or <code>{`{{internet.uuid}}`}</code> to generate Faker data. Use <code>{`{{query.search}}`}</code> to get the <code>?search=</code> parameter from the URL.
               </div>
               {route.body.trim() && (
                 <details className="mt-2">
@@ -335,11 +348,7 @@ export function RouteCard({ i }: RouteCardProps) {
                   color: 'var(--sea-ink-soft)',
                 }}
               >
-                <strong className="font-semibold">Faker Variables:</strong> You
-                can use templates like <code>{`{{name.firstName}}`}</code>,{' '}
-                <code>{`{{internet.email}}`}</code>,{' '}
-                <code>{`{{internet.uuid}}`}</code> in string values to generate
-                dynamic data on every request!
+                <strong className="font-semibold">Dynamic Variables:</strong> Use <code>{`{{name.firstName}}`}</code> or <code>{`{{internet.uuid}}`}</code> to generate Faker data. Use <code>{`{{query.search}}`}</code> to get the <code>?search=</code> parameter from the URL.
               </div>
             </div>
           )}

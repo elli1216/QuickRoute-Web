@@ -13,6 +13,7 @@ export const emptyRoute = (): RouteFormInput => ({
   body: '',
   authType: 'NONE',
   expectedToken: '',
+  generateArrayCount: 0,
 })
 
 interface CreateState {

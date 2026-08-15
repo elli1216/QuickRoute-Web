@@ -70,8 +70,51 @@ public class MockRequestHandler {
         }
 
         Map<String, String> pathVars = registry.extractPathVariables(requestUri, route.getPathPattern());
-        Object finalBody = substitutePathVars(route.getResponseBody(), pathVars);
-        finalBody = templateService.resolveTemplates(finalBody);
+        
+        Object baseBody = route.getResponseBody();
+        if (route.getGenerateArrayCount() > 0) {
+            java.util.List<Object> generatedList = new java.util.ArrayList<>(route.getGenerateArrayCount());
+            for (int i = 0; i < route.getGenerateArrayCount(); i++) {
+                generatedList.add(baseBody);
+            }
+            baseBody = generatedList;
+        }
+
+        Object finalBody = substitutePathVars(baseBody, pathVars);
+        finalBody = templateService.resolveTemplates(finalBody, request.getParameterMap());
+
+        // Pagination slicing
+        if (finalBody instanceof java.util.List<?> list) {
+            String pageParam = request.getParameter("page");
+            String limitParam = request.getParameter("limit");
+            String offsetParam = request.getParameter("offset");
+
+            if (limitParam != null) {
+                try {
+                    int limit = Integer.parseInt(limitParam);
+                    int offset = 0;
+                    if (pageParam != null) {
+                        int page = Integer.parseInt(pageParam);
+                        if (page > 0) {
+                            offset = (page - 1) * limit;
+                        }
+                    } else if (offsetParam != null) {
+                        offset = Integer.parseInt(offsetParam);
+                    }
+                    
+                    int size = list.size();
+                    if (offset < 0) offset = 0;
+                    if (offset >= size) {
+                        finalBody = java.util.Collections.emptyList();
+                    } else {
+                        int toIndex = Math.min(offset + limit, size);
+                        finalBody = list.subList(offset, toIndex);
+                    }
+                } catch (NumberFormatException e) {
+                    // Ignore pagination if invalid
+                }
+            }
+        }
 
         response.setStatus(route.getStatusCode());
         response.setContentType("application/json");

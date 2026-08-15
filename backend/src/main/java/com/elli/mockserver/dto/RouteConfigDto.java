@@ -7,6 +7,7 @@ public class RouteConfigDto {
     private Object body;
     private String authType;
     private String expectedToken;
+    private Integer generateArrayCount;
 
     public RouteConfigDto() {
     }
@@ -55,5 +56,13 @@ public class RouteConfigDto {
 
     public void setExpectedToken(String expectedToken) {
         this.expectedToken = expectedToken;
+    }
+
+    public Integer getGenerateArrayCount() {
+        return generateArrayCount;
+    }
+
+    public void setGenerateArrayCount(Integer generateArrayCount) {
+        this.generateArrayCount = generateArrayCount;
     }
 }

@@ -14,29 +14,36 @@ public class TemplateResolutionService {
     private final Faker faker = new Faker();
     private final Pattern pattern = Pattern.compile("\\{\\{([^}]+)\\}\\}");
 
-    public Object resolveTemplates(Object body) {
+    public Object resolveTemplates(Object body, Map<String, String[]> queryParams) {
         if (body instanceof String text) {
-            return resolveString(text);
+            return resolveString(text, queryParams);
         }
         if (body instanceof Map<?, ?> map) {
             Map<String, Object> result = new java.util.LinkedHashMap<>();
             for (var entry : map.entrySet()) {
-                result.put(entry.getKey().toString(), resolveTemplates(entry.getValue()));
+                result.put(entry.getKey().toString(), resolveTemplates(entry.getValue(), queryParams));
             }
             return result;
         }
         if (body instanceof List<?> list) {
-            return list.stream().map(this::resolveTemplates).toList();
+            return list.stream().map(item -> resolveTemplates(item, queryParams)).toList();
         }
         return body;
     }
 
-    private String resolveString(String text) {
+    private String resolveString(String text, Map<String, String[]> queryParams) {
         Matcher matcher = pattern.matcher(text);
         StringBuilder sb = new StringBuilder();
         while (matcher.find()) {
             String expression = matcher.group(1).trim();
-            String replacement = generateFakerValue(expression);
+            String replacement;
+            if (expression.startsWith("query.")) {
+                String paramName = expression.substring(6);
+                String[] values = queryParams != null ? queryParams.get(paramName) : null;
+                replacement = (values != null && values.length > 0) ? values[0] : "";
+            } else {
+                replacement = generateFakerValue(expression);
+            }
             matcher.appendReplacement(sb, Matcher.quoteReplacement(replacement));
         }
         matcher.appendTail(sb);

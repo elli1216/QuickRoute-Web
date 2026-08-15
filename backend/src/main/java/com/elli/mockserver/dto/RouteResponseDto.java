@@ -9,11 +9,12 @@ public class RouteResponseDto {
     private Object responseBody;
     private String authType;
     private String expectedToken;
+    private int generateArrayCount;
 
     public RouteResponseDto() {
     }
 
-    public RouteResponseDto(String method, String pathPattern, int statusCode, int delayMs, Object responseBody, String authType, String expectedToken) {
+    public RouteResponseDto(String method, String pathPattern, int statusCode, int delayMs, Object responseBody, String authType, String expectedToken, int generateArrayCount) {
         this.method = method;
         this.pathPattern = pathPattern;
         this.statusCode = statusCode;
@@ -21,6 +22,7 @@ public class RouteResponseDto {
         this.responseBody = responseBody;
         this.authType = authType;
         this.expectedToken = expectedToken;
+        this.generateArrayCount = generateArrayCount;
     }
 
     public String getMethod() {
@@ -77,5 +79,13 @@ public class RouteResponseDto {
 
     public void setExpectedToken(String expectedToken) {
         this.expectedToken = expectedToken;
+    }
+
+    public int getGenerateArrayCount() {
+        return generateArrayCount;
+    }
+
+    public void setGenerateArrayCount(int generateArrayCount) {
+        this.generateArrayCount = generateArrayCount;
     }
 }

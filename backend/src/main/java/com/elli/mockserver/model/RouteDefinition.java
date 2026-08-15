@@ -41,6 +41,8 @@ public class RouteDefinition {
 
     private String expectedToken;
 
+    private int generateArrayCount = 0;
+
     public RouteDefinition() {
         this.delayMs = 0;
         this.statusCode = 200;
@@ -124,5 +126,13 @@ public class RouteDefinition {
 
     public void setExpectedToken(String expectedToken) {
         this.expectedToken = expectedToken;
+    }
+
+    public int getGenerateArrayCount() {
+        return generateArrayCount;
+    }
+
+    public void setGenerateArrayCount(int generateArrayCount) {
+        this.generateArrayCount = generateArrayCount;
     }
 }

@@ -9,6 +9,7 @@ export interface RouteFormInput {
   body: string
   authType: string
   expectedToken: string
+  generateArrayCount?: number
 }
 
 interface RouteConfigDto {
@@ -17,6 +18,7 @@ interface RouteConfigDto {
   body: unknown
   authType?: string
   expectedToken?: string
+  generateArrayCount?: number
 }
 
 export interface MockUploadResult {
@@ -36,6 +38,7 @@ export interface MockSummary {
     responseBody?: unknown
     authType?: string
     expectedToken?: string
+    generateArrayCount?: number
   }>
 }
 
@@ -85,6 +88,7 @@ export async function uploadMock(
       body: parsedBody,
       authType: route.authType === 'NONE' ? undefined : route.authType,
       expectedToken: route.expectedToken,
+      generateArrayCount: route.generateArrayCount && route.generateArrayCount > 0 ? route.generateArrayCount : undefined,
     }
   }
 

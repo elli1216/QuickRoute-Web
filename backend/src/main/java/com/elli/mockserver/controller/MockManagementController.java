@@ -69,7 +69,8 @@ public class MockManagementController {
                                     r.getDelayMs(),
                                     r.getResponseBody(),
                                     r.getAuthType() != null ? r.getAuthType().name() : null,
-                                    r.getExpectedToken()))
+                                    r.getExpectedToken(),
+                                    r.getGenerateArrayCount()))
                             .toList()));
         }
         return ResponseEntity.ok(result);
@@ -94,7 +95,8 @@ public class MockManagementController {
                                 r.getDelayMs(),
                                 r.getResponseBody(),
                                 r.getAuthType() != null ? r.getAuthType().name() : null,
-                                r.getExpectedToken()))
+                                r.getExpectedToken(),
+                                r.getGenerateArrayCount()))
                         .toList()));
     }
 
@@ -136,6 +138,9 @@ public class MockManagementController {
                 }
             }
             route.setExpectedToken(config.getExpectedToken());
+            if (config.getGenerateArrayCount() != null) {
+                route.setGenerateArrayCount(config.getGenerateArrayCount());
+            }
 
             routes.add(route);
         }
