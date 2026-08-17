@@ -48,6 +48,8 @@ const jsonLdSchema = {
   },
 }
 
+import NotFoundComponent from '#/components/not-found/NotFound.tsx';
+
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   head: () => ({
     meta: [
@@ -160,6 +162,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     ],
   }),
   shellComponent: RootDocument,
+  notFoundComponent: NotFoundComponent,
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
