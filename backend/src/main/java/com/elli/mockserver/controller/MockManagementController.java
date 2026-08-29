@@ -69,7 +69,9 @@ public class MockManagementController {
                                     r.getDelayMs(),
                                     r.getResponseBody(),
                                     r.getAuthType() != null ? r.getAuthType().name() : null,
-                                    r.getExpectedToken()))
+                                    r.getExpectedToken(),
+                                    r.getDescription(),
+                                    r.getResponseHeaders()))
                             .toList()));
         }
         return ResponseEntity.ok(result);
@@ -94,7 +96,9 @@ public class MockManagementController {
                                 r.getDelayMs(),
                                 r.getResponseBody(),
                                 r.getAuthType() != null ? r.getAuthType().name() : null,
-                                r.getExpectedToken()))
+                                r.getExpectedToken(),
+                                r.getDescription(),
+                                r.getResponseHeaders()))
                         .toList()));
     }
 
@@ -121,12 +125,42 @@ public class MockManagementController {
             route.setPathPattern(path);
 
             if (config.getStatus() != null) {
+                if (config.getStatus() < 100 || config.getStatus() > 599) {
+                    throw new MockUploadException("Status code must be between 100 and 599 (got " + config.getStatus() + ")");
+                }
                 route.setStatusCode(config.getStatus());
             }
             if (config.getDelay() != null) {
+                if (config.getDelay() < 0 || config.getDelay() > 60000) {
+                    throw new MockUploadException("Delay must be between 0 and 60000 ms (got " + config.getDelay() + ")");
+                }
                 route.setDelayMs(config.getDelay());
             }
             route.setResponseBody(config.getBody());
+
+            if (config.getDescription() != null) {
+                String desc = config.getDescription().trim();
+                if (desc.length() > 500) {
+                    throw new MockUploadException("Route description too long (max 500 characters)");
+                }
+                route.setDescription(desc.isEmpty() ? null : desc);
+            }
+
+            if (config.getHeaders() != null && !config.getHeaders().isEmpty()) {
+                Map<String, String> sanitizedHeaders = new LinkedHashMap<>();
+                for (var headerEntry : config.getHeaders().entrySet()) {
+                    String headerName = headerEntry.getKey();
+                    String headerValue = headerEntry.getValue();
+                    if (headerName != null && !headerName.trim().isEmpty() && headerValue != null) {
+                        if (headerName.contains("\r") || headerName.contains("\n") ||
+                            headerValue.contains("\r") || headerValue.contains("\n")) {
+                            throw new MockUploadException("CRLF injection detected in header: " + headerName);
+                        }
+                        sanitizedHeaders.put(headerName.trim(), headerValue.trim());
+                    }
+                }
+                route.setResponseHeaders(sanitizedHeaders.isEmpty() ? null : sanitizedHeaders);
+            }
 
             if (config.getAuthType() != null) {
                 try {

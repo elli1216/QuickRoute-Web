@@ -9,6 +9,8 @@ export interface RouteFormInput {
   body: string
   authType: string
   expectedToken: string
+  description?: string
+  headers?: Record<string, string>
 }
 
 interface RouteConfigDto {
@@ -17,6 +19,8 @@ interface RouteConfigDto {
   body: unknown
   authType?: string
   expectedToken?: string
+  description?: string
+  headers?: Record<string, string>
 }
 
 export interface MockUploadResult {
@@ -36,6 +40,8 @@ export interface MockSummary {
     responseBody?: unknown
     authType?: string
     expectedToken?: string
+    description?: string
+    headers?: Record<string, string>
   }>
 }
 
@@ -85,6 +91,8 @@ export async function uploadMock(
       body: parsedBody,
       authType: route.authType === 'NONE' ? undefined : route.authType,
       expectedToken: route.expectedToken,
+      description: route.description,
+      headers: route.headers,
     }
   }
 

@@ -41,6 +41,12 @@ public class RouteDefinition {
 
     private String expectedToken;
 
+    private String description;
+
+    @Column(columnDefinition = "TEXT")
+    @Convert(converter = JsonObjectConverter.class)
+    private java.util.Map<String, String> responseHeaders;
+
     public RouteDefinition() {
         this.delayMs = 0;
         this.statusCode = 200;
@@ -124,5 +130,21 @@ public class RouteDefinition {
 
     public void setExpectedToken(String expectedToken) {
         this.expectedToken = expectedToken;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public java.util.Map<String, String> getResponseHeaders() {
+        return responseHeaders;
+    }
+
+    public void setResponseHeaders(java.util.Map<String, String> responseHeaders) {
+        this.responseHeaders = responseHeaders;
     }
 }

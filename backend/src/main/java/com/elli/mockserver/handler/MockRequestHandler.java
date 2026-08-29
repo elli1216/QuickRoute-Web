@@ -73,6 +73,14 @@ public class MockRequestHandler {
         Object finalBody = substitutePathVars(route.getResponseBody(), pathVars);
         finalBody = templateService.resolveTemplates(finalBody);
 
+        if (route.getResponseHeaders() != null && !route.getResponseHeaders().isEmpty()) {
+            for (var header : route.getResponseHeaders().entrySet()) {
+                if (header.getKey() != null && header.getValue() != null) {
+                    response.setHeader(header.getKey(), header.getValue());
+                }
+            }
+        }
+
         response.setStatus(route.getStatusCode());
         response.setContentType("application/json");
         objectMapper.writeValue(response.getWriter(), finalBody);
