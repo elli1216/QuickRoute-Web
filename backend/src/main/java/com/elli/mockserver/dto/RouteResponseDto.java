@@ -9,11 +9,13 @@ public class RouteResponseDto {
     private Object responseBody;
     private String authType;
     private String expectedToken;
+    private String description;
+    private java.util.Map<String, String> headers;
 
     public RouteResponseDto() {
     }
 
-    public RouteResponseDto(String method, String pathPattern, int statusCode, int delayMs, Object responseBody, String authType, String expectedToken) {
+    public RouteResponseDto(String method, String pathPattern, int statusCode, int delayMs, Object responseBody, String authType, String expectedToken, String description, java.util.Map<String, String> headers) {
         this.method = method;
         this.pathPattern = pathPattern;
         this.statusCode = statusCode;
@@ -21,6 +23,8 @@ public class RouteResponseDto {
         this.responseBody = responseBody;
         this.authType = authType;
         this.expectedToken = expectedToken;
+        this.description = description;
+        this.headers = headers;
     }
 
     public String getMethod() {
@@ -77,5 +81,21 @@ public class RouteResponseDto {
 
     public void setExpectedToken(String expectedToken) {
         this.expectedToken = expectedToken;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public java.util.Map<String, String> getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(java.util.Map<String, String> headers) {
+        this.headers = headers;
     }
 }

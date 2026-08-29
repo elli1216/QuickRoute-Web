@@ -7,6 +7,8 @@ public class RouteConfigDto {
     private Object body;
     private String authType;
     private String expectedToken;
+    private String description;
+    private java.util.Map<String, String> headers;
 
     public RouteConfigDto() {
     }
@@ -55,5 +57,21 @@ public class RouteConfigDto {
 
     public void setExpectedToken(String expectedToken) {
         this.expectedToken = expectedToken;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public java.util.Map<String, String> getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(java.util.Map<String, String> headers) {
+        this.headers = headers;
     }
 }

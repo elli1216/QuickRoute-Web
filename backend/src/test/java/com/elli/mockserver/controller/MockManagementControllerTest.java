@@ -41,6 +41,9 @@ class MockManagementControllerTest {
         @MockitoBean
         private MockRegistryService registry;
 
+        @MockitoBean
+        private com.elli.mockserver.repository.RequestLogRepository requestLogRepository;
+
         @Test
         void testUploadMock() throws Exception {
                 Map<String, RouteConfigDto> requestBody = Map.of(
@@ -113,5 +116,47 @@ class MockManagementControllerTest {
 
                 mockMvc.perform(delete("/mock/{mockId}", mockId))
                                 .andExpect(status().isNoContent());
+        }
+
+        @Test
+        void testUploadMockWithHeadersAndDescription() throws Exception {
+                RouteConfigDto route = new RouteConfigDto(201, 50, "{\"id\":1}");
+                route.setDescription("Create user endpoint");
+                route.setHeaders(Map.of("X-Custom-Header", "CustomValue", "Cache-Control", "no-cache"));
+
+                Map<String, RouteConfigDto> requestBody = Map.of("POST /api/users", route);
+
+                doNothing().when(routeRegistrar).registerRoute(anyString(),
+                                org.mockito.ArgumentMatchers.any(RouteDefinition.class));
+                doNothing().when(registry).registerMock(anyString(), anyList(), anyInt());
+
+                mockMvc.perform(post("/mock/upload")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(requestBody)))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.mockId").exists());
+        }
+
+        @Test
+        void testUploadMockInvalidStatusCode() throws Exception {
+                RouteConfigDto route = new RouteConfigDto(99, 0, "{}");
+                Map<String, RouteConfigDto> requestBody = Map.of("GET /invalid-status", route);
+
+                mockMvc.perform(post("/mock/upload")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(requestBody)))
+                                .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void testUploadMockCrlfHeaderInjection() throws Exception {
+                RouteConfigDto route = new RouteConfigDto(200, 0, "{}");
+                route.setHeaders(Map.of("X-Bad-Header\r\nInjected", "value"));
+                Map<String, RouteConfigDto> requestBody = Map.of("GET /bad-header", route);
+
+                mockMvc.perform(post("/mock/upload")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(requestBody)))
+                                .andExpect(status().isBadRequest());
         }
 }
