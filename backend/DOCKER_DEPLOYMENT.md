@@ -49,25 +49,49 @@ docker push $IMAGE_URI:latest
 
 - **Base Image**: `eclipse-temurin:25-jre` (minimal Java 25 runtime)
 - **Port**: 8080
-- **Non-root User**: appuser (uid: 1000)
+- **Non-root User**: appuser (uid: 10001)
 - **Health Check**: `/ping` endpoint
 - **Size**: ~300-400MB (optimized with multi-stage build)
+- **Profiles**: dev (H2 in-memory), prod (PostgreSQL)
 
 ## Environment Variables
 
-Set these when running the container:
-
+### Production (Neon PostgreSQL)
 ```bash
 docker run -e SPRING_PROFILES_ACTIVE=prod \
-           -e DATABASE_URL=postgresql://user:pass@host:5432/mockdb \
+           -e DATABASE_URL="postgresql://neondb_owner:npg_DCtGcOea3EZ0@ep-spring-king-az9h8p2l-pooler.c-3.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require" \
            -p 8080:8080 \
            $IMAGE_URI:latest
 ```
 
+### Development (H2 in-memory)
+```bash
+docker run -e SPRING_PROFILES_ACTIVE=dev \
+           -p 8080:8080 \
+           $IMAGE_URI:latest
+```
+
+### Required Environment Variables
+- **DATABASE_URL** (prod only): PostgreSQL connection string from Neon
+  - Format: `postgresql://user:password@host:port/database?sslmode=require&channel_binding=require`
+- **SPRING_PROFILES_ACTIVE** (optional): `prod` (PostgreSQL) or `dev` (H2) — default: prod
+
 ## Local Testing
 
+### With H2 (Development)
 ```bash
 docker build -t mock-server:latest .
-docker run -p 8080:8080 mock-server:latest
+docker run -e SPRING_PROFILES_ACTIVE=dev -p 8080:8080 mock-server:latest
+curl http://localhost:8080/ping
+# H2 Console: http://localhost:8080/h2-console
+```
+
+### With Neon PostgreSQL (Production)
+```bash
+docker build -t mock-server:latest .
+docker run -e SPRING_PROFILES_ACTIVE=prod \
+           -e DATABASE_URL="DATABASE_URL_HERE" \
+           -p 8080:8080 \
+           mock-server:latest
 curl http://localhost:8080/ping
 ```

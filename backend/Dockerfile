@@ -7,6 +7,9 @@ WORKDIR /app
 COPY .mvn .mvn
 COPY mvnw pom.xml ./
 
+# Fix Maven wrapper permissions
+RUN chmod +x ./mvnw
+
 # Download dependencies (cache layer)
 RUN ./mvnw dependency:resolve
 
@@ -22,7 +25,7 @@ FROM eclipse-temurin:25-jre
 WORKDIR /app
 
 # Create non-root user
-RUN useradd -m -u 1000 appuser
+RUN useradd -m -u 10001 appuser
 
 # Copy JAR from builder
 COPY --from=builder /app/target/mock-server-0.0.1-SNAPSHOT.jar app.jar
@@ -40,5 +43,7 @@ EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:8080/ping || exit 1
 
-# Run the application
+# Run the application with prod profile
+# Set SPRING_PROFILES_ACTIVE and DATABASE_URL at runtime
 ENTRYPOINT ["java", "-jar", "app.jar"]
+CMD ["--spring.profiles.active=prod"]
