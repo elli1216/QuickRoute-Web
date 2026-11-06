@@ -1,0 +1,36 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto25
+
+  pre_build:
+    commands:
+      - echo "Using Java:"
+      - java -version
+      - echo "Using Maven:"
+      - mvn -version
+
+  build:
+    commands:
+      - echo "Building and testing backend..."
+      - cd backend
+      - mvn clean verify
+
+  post_build:
+    commands:
+      - echo "Backend build and tests completed successfully."
+
+reports:
+  junit-reports:
+    files:
+      - "**/*"
+    base-directory: "backend/target/surefire-reports"
+    file-format: JUNITXML
+
+artifacts:
+  base-directory: "backend/target"
+  files:
+    - "*.jar"
+  discard-paths: yes
