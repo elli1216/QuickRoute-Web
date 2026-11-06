@@ -42,6 +42,9 @@ class MockRegistryServiceTest {
     @Mock
     private RequestLogRepository requestLogRepository;
 
+    @Mock
+    private StatisticsService statisticsService;
+
     @Spy
     private RouteMatcherService routeMatcherService = new RouteMatcherService();
 
@@ -49,7 +52,6 @@ class MockRegistryServiceTest {
 
     private MockConfiguration mockConfiguration;
     private RouteDefinition routeDefinition;
-    private StatisticsService statisticsService;
 
     @BeforeEach
     void setUp() {

@@ -142,6 +142,18 @@ public class MockManagementController {
         return routes;
     }
 
+    @DeleteMapping("/mock/{mockId}")
+    public ResponseEntity<Void> deleteMock(@PathVariable String mockId) {
+        MockConfiguration mock = registry.getMock(mockId);
+        if (mock != null) {
+            for (RouteDefinition route : mock.getRoutes()) {
+                routeRegistrar.unregisterRoute(mockId, route);
+            }
+            registry.removeMock(mockId);
+        }
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/ping")
     public ResponseEntity<String> keepBackendAlive() {
         return ResponseEntity.ok("Server is pinged.");

@@ -3,12 +3,14 @@ package com.elli.mockserver.controller;
 import com.elli.mockserver.dto.RouteConfigDto;
 import com.elli.mockserver.model.MockConfiguration;
 import com.elli.mockserver.model.RouteDefinition;
+import com.elli.mockserver.repository.RequestLogRepository;
 import com.elli.mockserver.service.DynamicRouteRegistrar;
 import com.elli.mockserver.service.MockRegistryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.cache.CacheManager;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -32,14 +34,19 @@ class MockManagementControllerTest {
         @Autowired
         private MockMvc mockMvc;
 
-        @Autowired
-        private ObjectMapper objectMapper;
+        private ObjectMapper objectMapper = new ObjectMapper();
 
         @MockitoBean
         private DynamicRouteRegistrar routeRegistrar;
 
         @MockitoBean
         private MockRegistryService registry;
+
+        @MockitoBean
+        private RequestLogRepository requestLogRepository;
+
+        @MockitoBean
+        private CacheManager cacheManager;
 
         @Test
         void testUploadMock() throws Exception {
@@ -77,7 +84,7 @@ class MockManagementControllerTest {
 
                 mockMvc.perform(get("/mock/{mockId}", mockId))
                                 .andExpect(status().isOk())
-                                .andExpect(jsonPath("$.id").value(mockId));
+                                .andExpect(jsonPath("$.mockId").value(mockId));
         }
 
         @Test
@@ -100,7 +107,7 @@ class MockManagementControllerTest {
 
                 mockMvc.perform(get("/mocks"))
                                 .andExpect(status().isOk())
-                                .andExpect(jsonPath("$.['test-mock'].id").value(mockId));
+                                .andExpect(jsonPath("$['test-mock'].mockId").value(mockId));
         }
 
         @Test
