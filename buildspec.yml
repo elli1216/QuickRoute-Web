@@ -7,30 +7,31 @@ phases:
 
   pre_build:
     commands:
-      - echo "Using Java:"
+      - echo "Java version:"
       - java -version
-      - echo "Using Maven:"
+      - echo "Maven version:"
       - mvn -version
 
   build:
     commands:
-      - echo "Building and testing backend..."
-      - cd backend
-      - mvn clean verify
+      - echo "Running backend build and JUnit tests..."
+      - mvn -f backend/pom.xml clean verify
 
   post_build:
     commands:
-      - echo "Backend build and tests completed successfully."
+      - echo "Backend build completed."
+      - echo "Generated JAR files:"
+      - find backend/target -maxdepth 1 -type f -name "*.jar" -print
 
 reports:
   junit-reports:
     files:
-      - "**/*"
-    base-directory: "backend/target/surefire-reports"
+      - "*.xml"
+    base-directory: backend/target/surefire-reports
     file-format: JUNITXML
 
 artifacts:
-  base-directory: "backend/target"
+  base-directory: backend/target
   files:
     - "*.jar"
   discard-paths: yes
