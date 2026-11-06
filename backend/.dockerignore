@@ -1,8 +1,10 @@
 target/
-.idea/
-.vscode/
-*.md
 .git
-.gitattributes
 .gitignore
-mock-store/
+.env
+.vscode
+.idea
+*.md
+node_modules/
+.DS_Store
+*.log
