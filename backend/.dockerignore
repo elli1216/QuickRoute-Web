@@ -2,9 +2,12 @@ target/
 .git
 .gitignore
 .env
+.env.*
 .vscode
 .idea
 *.md
 node_modules/
+pictures/
+mock-store/
 .DS_Store
 *.log
